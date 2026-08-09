@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as ApiPublicBootstrapIsabRouteImport } from './routes/api/public/bootstrap-isab'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,49 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBootstrapIsabRoute = ApiPublicBootstrapIsabRouteImport.update({
+  id: '/api/public/bootstrap-isab',
+  path: '/api/public/bootstrap-isab',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/bootstrap-isab': typeof ApiPublicBootstrapIsabRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/bootstrap-isab': typeof ApiPublicBootstrapIsabRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/bootstrap-isab': typeof ApiPublicBootstrapIsabRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin/dashboard' | '/admin/'
+  fullPaths: '/' | '/admin/dashboard' | '/admin/' | '/api/public/bootstrap-isab'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/dashboard' | '/admin'
-  id: '__root__' | '/' | '/admin/dashboard' | '/admin/'
+  to: '/' | '/admin/dashboard' | '/admin' | '/api/public/bootstrap-isab'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin/dashboard'
+    | '/admin/'
+    | '/api/public/bootstrap-isab'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiPublicBootstrapIsabRoute: typeof ApiPublicBootstrapIsabRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +97,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/bootstrap-isab': {
+      id: '/api/public/bootstrap-isab'
+      path: '/api/public/bootstrap-isab'
+      fullPath: '/api/public/bootstrap-isab'
+      preLoaderRoute: typeof ApiPublicBootstrapIsabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +111,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiPublicBootstrapIsabRoute: ApiPublicBootstrapIsabRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
