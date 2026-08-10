@@ -135,6 +135,7 @@ function Dashboard() {
         name: state.name.trim(),
         price: Number(state.price.replace(",", ".")),
         description: state.description.trim(),
+        stock_quantity: Math.max(0, Math.floor(Number(state.stock || "0"))),
         image_url: imagePath,
       };
 
