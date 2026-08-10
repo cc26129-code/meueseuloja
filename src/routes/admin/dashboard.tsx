@@ -469,7 +469,6 @@ function Dashboard() {
             </div>
 
             <div className="space-y-2">
-            <div className="space-y-2">
               <Label htmlFor="stock" className="text-xs uppercase tracking-widest">
                 Quantidade em estoque
               </Label>
