@@ -469,7 +469,28 @@ function Dashboard() {
             </div>
 
             <div className="space-y-2">
+            <div className="space-y-2">
+              <Label htmlFor="stock" className="text-xs uppercase tracking-widest">
+                Quantidade em estoque
+              </Label>
+              <Input
+                id="stock"
+                type="number"
+                min={0}
+                step={1}
+                value={form.stock}
+                onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
+                className="rounded-xl"
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                O estoque só muda quando você editar aqui — pedidos no carrinho não descontam nada.
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="description" className="text-xs uppercase tracking-widest">
+
                 Descrição
               </Label>
               <Textarea
