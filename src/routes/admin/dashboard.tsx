@@ -182,6 +182,7 @@ function Dashboard() {
       name: p.name,
       price: String(p.price),
       description: p.description ?? "",
+      stock: String(p.stock_quantity ?? 0),
       file: null,
       currentImage: p.image_url,
       preview: p.signedUrl ?? null,
