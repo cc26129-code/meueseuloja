@@ -52,7 +52,7 @@
 }
 
 :root {
-  --radius: 0.25rem;
+  --radius: 0.9rem;
   --background: oklch(0.13 0.012 300);
   --foreground: oklch(0.96 0.008 305);
   --card: oklch(0.17 0.016 300);
@@ -155,4 +155,8 @@
 
 @utility tracking-luxe {
   letter-spacing: 0.32em;
+}
+
+@utility shadow-soft {
+  box-shadow: 0 18px 40px -28px color-mix(in oklab, var(--primary) 60%, transparent);
 }

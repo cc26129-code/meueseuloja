@@ -6,6 +6,7 @@ export type Product = {
   price: number;
   description: string;
   image_url: string | null;
+  stock_quantity: number;
   created_at: string;
   updated_at: string;
 };
@@ -16,7 +17,21 @@ export function formatBRL(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
 
-export async function fetchProducts(): Promise<Product[]> {
+export type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
+
+export function stockStatus(qty: number): StockStatus {
+  if (qty <= 0) return "out_of_stock";
+  if (qty <= 5) return "low_stock";
+  return "in_stock";
+}
+
+export const stockStatusLabel: Record<StockStatus, string> = {
+  in_stock: "Disponível",
+  low_stock: "Estoque baixo",
+  out_of_stock: "Esgotado",
+};
+
+export async function fetchProducts(): Promise<ProductWithUrl[]> {
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -32,7 +47,7 @@ export async function fetchProducts(): Promise<Product[]> {
   return products.map((p) => ({
     ...p,
     signedUrl: p.image_url ? (map.get(p.image_url) ?? null) : null,
-  })) as Product[];
+  }));
 }
 
 export type ProductWithUrl = Product & { signedUrl?: string | null };
