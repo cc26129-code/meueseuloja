@@ -30,6 +30,8 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   fetchProducts,
   formatBRL,
+  stockStatus,
+  stockStatusLabel,
   uploadProductImage,
   type ProductWithUrl,
 } from "@/lib/products";
