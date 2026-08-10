@@ -76,7 +76,7 @@ function AdminLogin() {
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
               maxLength={60}
-              className="rounded-none"
+              className="rounded-xl"
               required
             />
           </div>
@@ -91,11 +91,11 @@ function AdminLogin() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               maxLength={128}
-              className="rounded-none"
+              className="rounded-xl"
               required
             />
           </div>
-          <Button type="submit" disabled={loading} className="w-full rounded-none tracking-widest">
+          <Button type="submit" disabled={loading} className="w-full rounded-xl tracking-widest">
             {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
             Entrar
           </Button>

@@ -202,13 +202,13 @@ function Dashboard() {
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="rounded-none">
+            <Button asChild variant="ghost" size="sm" className="rounded-xl">
               <Link to="/">
                 <Store className="size-4 sm:mr-2" />
                 <span className="hidden sm:inline">Ver loja</span>
               </Link>
             </Button>
-            <Button variant="outline" size="sm" className="rounded-none" onClick={signOut}>
+            <Button variant="outline" size="sm" className="rounded-xl" onClick={signOut}>
               <LogOut className="size-4 sm:mr-2" />
               <span className="hidden sm:inline">Sair</span>
             </Button>
@@ -224,7 +224,7 @@ function Dashboard() {
               {products.length} {products.length === 1 ? "produto cadastrado" : "produtos cadastrados"}
             </p>
           </div>
-          <Button onClick={openNew} className="rounded-none tracking-widest">
+          <Button onClick={openNew} className="rounded-xl tracking-widest">
             <Plus className="size-4 sm:mr-2" />
             <span className="hidden sm:inline">Adicionar produto</span>
           </Button>
@@ -232,7 +232,7 @@ function Dashboard() {
 
         <div className="mt-10 space-y-4">
           {isLoading ? (
-            [0, 1, 2].map((i) => <Skeleton key={i} className="h-28 w-full rounded-none" />)
+            [0, 1, 2].map((i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)
           ) : products.length === 0 ? (
             <div className="border border-border bg-card px-6 py-20 text-center">
               <p className="font-display text-2xl">Nenhum produto ainda</p>
@@ -269,7 +269,7 @@ function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-none"
+                    className="rounded-xl"
                     onClick={() => openEdit(p)}
                   >
                     <Pencil className="size-4 sm:mr-2" />
@@ -278,7 +278,7 @@ function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-none text-destructive hover:text-destructive"
+                    className="rounded-xl text-destructive hover:text-destructive"
                     onClick={() => setDeleting(p)}
                   >
                     <Trash2 className="size-4 sm:mr-2" />
@@ -292,7 +292,7 @@ function Dashboard() {
       </main>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-none border-border bg-card sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border-border bg-card sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display text-3xl">
               {form.id ? "Editar produto" : "Adicionar produto"}
@@ -318,7 +318,7 @@ function Dashboard() {
                 <Input
                   type="file"
                   accept="image/*"
-                  className="rounded-none"
+                  className="rounded-xl"
                   onChange={(e) => onFile(e.target.files?.[0] ?? null)}
                 />
               </div>
@@ -333,7 +333,7 @@ function Dashboard() {
                 value={form.name}
                 maxLength={120}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                className="rounded-none"
+                className="rounded-xl"
                 required
               />
             </div>
@@ -348,7 +348,7 @@ function Dashboard() {
                 value={form.price}
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 placeholder="0,00"
-                className="rounded-none"
+                className="rounded-xl"
                 required
               />
             </div>
@@ -363,7 +363,7 @@ function Dashboard() {
                 maxLength={1000}
                 rows={4}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                className="rounded-none"
+                className="rounded-xl"
                 required
               />
             </div>
@@ -372,12 +372,12 @@ function Dashboard() {
               <Button
                 type="button"
                 variant="ghost"
-                className="rounded-none"
+                className="rounded-xl"
                 onClick={() => setOpen(false)}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={save.isPending} className="rounded-none">
+              <Button type="submit" disabled={save.isPending} className="rounded-xl">
                 {save.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Salvar
               </Button>
@@ -387,7 +387,7 @@ function Dashboard() {
       </Dialog>
 
       <AlertDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
-        <AlertDialogContent className="rounded-none border-border bg-card">
+        <AlertDialogContent className="rounded-xl border-border bg-card">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-2xl">Excluir produto?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -395,9 +395,9 @@ function Dashboard() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-none">Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-none"
+              className="rounded-xl"
               onClick={(e) => {
                 e.preventDefault();
                 if (deleting) remove.mutate(deleting);
