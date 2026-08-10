@@ -66,6 +66,7 @@ type FormState = {
   name: string;
   price: string;
   description: string;
+  stock: string;
   file: File | null;
   currentImage: string | null;
   preview: string | null;
@@ -75,10 +76,20 @@ const emptyForm: FormState = {
   name: "",
   price: "",
   description: "",
+  stock: "0",
   file: null,
   currentImage: null,
   preview: null,
 };
+
+type Filter = "all" | "in_stock" | "low_stock" | "out_of_stock";
+
+const filters: { key: Filter; label: string }[] = [
+  { key: "all", label: "Todos" },
+  { key: "in_stock", label: "Disponíveis" },
+  { key: "low_stock", label: "Estoque baixo" },
+  { key: "out_of_stock", label: "Esgotados" },
+];
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -86,9 +97,32 @@ function Dashboard() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [deleting, setDeleting] = useState<ProductWithUrl | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [stockEditId, setStockEditId] = useState<string | null>(null);
+  const [stockValue, setStockValue] = useState("0");
 
   const { data, isLoading } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const products = (data ?? []) as ProductWithUrl[];
+  const allProducts = (data ?? []) as ProductWithUrl[];
+  const products = allProducts.filter(
+    (p) => filter === "all" || stockStatus(Number(p.stock_quantity ?? 0)) === filter,
+  );
+
+  const saveStock = useMutation({
+    mutationFn: async ({ id, stock }: { id: string; stock: number }) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ stock_quantity: stock })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Estoque atualizado.");
+      setStockEditId(null);
+    },
+    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar o estoque."),
+  });
+
 
   const save = useMutation({
     mutationFn: async (state: FormState) => {
