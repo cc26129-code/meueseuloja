@@ -15,13 +15,13 @@ import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "meueseuloja — Vitrine premium de produtos selecionados" },
+      { title: "meueseuloja | Vitrine premium de produtos selecionados" },
       {
         name: "description",
         content:
           "Conheça a meueseuloja: curadoria premium de produtos com acabamento impecável, fotos reais e atendimento próximo.",
       },
-      { property: "og:title", content: "meueseuloja — Vitrine premium" },
+      { property: "og:title", content: "meueseuloja | Vitrine premium" },
       {
         property: "og:description",
         content: "Curadoria premium de produtos selecionados com cuidado.",
@@ -177,7 +177,7 @@ function Home() {
               Peças que carregam <span className="text-gold-gradient">presença</span>
             </h1>
             <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Na meueseuloja cada produto é escolhido a dedo — materiais nobres, acabamento
+              Na meueseuloja cada produto é escolhido a dedo: materiais nobres, acabamento
               impecável e uma vitrine feita para quem aprecia o detalhe.
             </p>
             <div className="mt-12 flex flex-wrap gap-4">
@@ -253,7 +253,7 @@ function Home() {
             <div className="space-y-5 text-sm leading-relaxed text-muted-foreground">
               <p>
                 Nascemos de um gosto simples: o de oferecer poucas peças, bem escolhidas. Nada de
-                catálogo infinito — apenas o que vale a pena.
+                catálogo infinito, apenas o que vale a pena.
               </p>
               <p>
                 Cada item passa por avaliação de material, acabamento e durabilidade antes de entrar

@@ -53,7 +53,7 @@ export function CartSheet() {
         <SheetHeader className="px-6">
           <SheetTitle className="font-display text-3xl">Seu carrinho</SheetTitle>
           <SheetDescription>
-            O estoque é controlado pela loja — nada é reservado automaticamente.
+            O estoque é controlado pela loja; nada é reservado automaticamente.
           </SheetDescription>
         </SheetHeader>
 

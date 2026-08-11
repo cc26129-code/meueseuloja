@@ -13,10 +13,10 @@ export const Route = createFileRoute("/admin/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Acesso restrito — meueseuloja" },
+      { title: "Acesso restrito | meueseuloja" },
       { name: "description", content: "Área administrativa da meueseuloja." },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Acesso restrito — meueseuloja" },
+      { property: "og:title", content: "Acesso restrito | meueseuloja" },
       { property: "og:description", content: "Área administrativa da meueseuloja." },
     ],
   }),
