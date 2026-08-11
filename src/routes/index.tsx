@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Circle, Minus, Plus, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import heroImage from "@/assets/hero.jpg";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { ProductShowcase } from "@/components/site/ProductShowcase";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart";
@@ -161,6 +162,8 @@ function Home() {
       <Header />
 
       <main id="topo">
+        <ProductShowcase />
+
         <section className="relative flex min-h-[92vh] items-center overflow-hidden">
           <img
             src={heroImage}
