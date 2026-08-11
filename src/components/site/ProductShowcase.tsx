@@ -149,8 +149,8 @@ export function ProductShowcase() {
           </div>
         </div>
 
-        <div className="mt-8 overflow-hidden" ref={emblaRef}>
-          <div className="flex touch-pan-y gap-5">
+        <div className="-mx-2 mt-8 overflow-hidden px-2 py-2" ref={emblaRef}>
+          <div className="flex touch-pan-y gap-5 pl-0 pr-0">
             {isLoading
               ? [0, 1, 2, 3].map((i) => (
                   <div
