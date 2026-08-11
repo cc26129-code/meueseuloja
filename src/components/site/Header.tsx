@@ -26,10 +26,8 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "border-b border-border bg-background/85 py-3 backdrop-blur-xl"
-          : "border-b border-transparent py-6"
+      className={`fixed inset-x-0 top-0 z-50 border-b border-border bg-background transition-all duration-500 ${
+        scrolled ? "py-3 shadow-soft" : "py-6"
       }`}
     >
       <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8">

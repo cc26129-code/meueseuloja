@@ -120,11 +120,7 @@ export function ProductShowcase() {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="mx-auto w-full max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-[0.65rem] uppercase tracking-luxe text-primary">Em destaque</p>
-            <h2 className="mt-3 font-display text-3xl sm:text-4xl">Vitrine premium</h2>
-          </div>
+        <div className="flex flex-wrap items-center justify-end gap-4">
           <div className="flex gap-2">
             <Button
               type="button"
@@ -149,8 +145,8 @@ export function ProductShowcase() {
           </div>
         </div>
 
-        <div className="mt-8 overflow-hidden" ref={emblaRef}>
-          <div className="flex touch-pan-y gap-5">
+        <div className="-mx-5 mt-8 overflow-hidden sm:-mx-8" ref={emblaRef}>
+          <div className="flex touch-pan-y gap-5 pl-5 pr-5 sm:pl-8 sm:pr-8">
             {isLoading
               ? [0, 1, 2, 3].map((i) => (
                   <div
