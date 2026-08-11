@@ -80,13 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "meueseuloja — Vitrine premium" },
+      { title: "meueseuloja | Vitrine premium" },
       {
         name: "description",
         content: "Curadoria premium de produtos selecionados pela meueseuloja.",
       },
       { name: "author", content: "meueseuloja" },
-      { property: "og:title", content: "meueseuloja — Vitrine premium" },
+      { property: "og:title", content: "meueseuloja | Vitrine premium" },
       {
         property: "og:description",
         content: "Curadoria premium de produtos selecionados pela meueseuloja.",

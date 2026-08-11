@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Circle, Minus, Plus, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import heroImage from "@/assets/hero.jpg";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { ProductShowcase } from "@/components/site/ProductShowcase";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart";
@@ -15,13 +16,13 @@ import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "meueseuloja — Vitrine premium de produtos selecionados" },
+      { title: "meueseuloja | Vitrine premium de produtos selecionados" },
       {
         name: "description",
         content:
           "Conheça a meueseuloja: curadoria premium de produtos com acabamento impecável, fotos reais e atendimento próximo.",
       },
-      { property: "og:title", content: "meueseuloja — Vitrine premium" },
+      { property: "og:title", content: "meueseuloja | Vitrine premium" },
       {
         property: "og:description",
         content: "Curadoria premium de produtos selecionados com cuidado.",
@@ -79,13 +80,14 @@ function ProductCard({ product }: { product: ProductWithUrl }) {
         )}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/70 to-transparent opacity-70" />
         <span
-          className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.18em] backdrop-blur ${
+          className={`absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.18em] backdrop-blur ${
             available
               ? "bg-primary/15 text-primary"
               : "bg-destructive/15 text-destructive"
           }`}
         >
-          {available ? "🟢 Disponível" : "🔴 Esgotado"}
+          {available ? <Check className="size-3" /> : <Circle className="size-3" />}
+          {available ? "Disponível" : "Esgotado"}
         </span>
       </div>
 
@@ -160,6 +162,8 @@ function Home() {
       <Header />
 
       <main id="topo">
+        <ProductShowcase />
+
         <section className="relative flex min-h-[92vh] items-center overflow-hidden">
           <img
             src={heroImage}
@@ -177,7 +181,7 @@ function Home() {
               Peças que carregam <span className="text-gold-gradient">presença</span>
             </h1>
             <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Na meueseuloja cada produto é escolhido a dedo — materiais nobres, acabamento
+              Na meueseuloja cada produto é escolhido a dedo: materiais nobres, acabamento
               impecável e uma vitrine feita para quem aprecia o detalhe.
             </p>
             <div className="mt-12 flex flex-wrap gap-4">
@@ -253,7 +257,7 @@ function Home() {
             <div className="space-y-5 text-sm leading-relaxed text-muted-foreground">
               <p>
                 Nascemos de um gosto simples: o de oferecer poucas peças, bem escolhidas. Nada de
-                catálogo infinito — apenas o que vale a pena.
+                catálogo infinito, apenas o que vale a pena.
               </p>
               <p>
                 Cada item passa por avaliação de material, acabamento e durabilidade antes de entrar

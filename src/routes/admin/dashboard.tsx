@@ -53,10 +53,10 @@ export const Route = createFileRoute("/admin/dashboard")({
   },
   head: () => ({
     meta: [
-      { title: "Painel administrativo — meueseuloja" },
+      { title: "Painel administrativo | meueseuloja" },
       { name: "description", content: "Gerencie os produtos da meueseuloja." },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Painel administrativo — meueseuloja" },
+      { property: "og:title", content: "Painel administrativo | meueseuloja" },
       { property: "og:description", content: "Gerencie os produtos da meueseuloja." },
     ],
   }),
@@ -373,7 +373,7 @@ function Dashboard() {
                           setStockValue(String(qty));
                         }}
                       >
-                        Estoque: {qty} — editar
+                        Estoque: {qty} (editar)
                       </button>
                     )}
                   </div>
@@ -483,7 +483,7 @@ function Dashboard() {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                O estoque só muda quando você editar aqui — pedidos no carrinho não descontam nada.
+                O estoque só muda quando você editar aqui; pedidos no carrinho não descontam nada.
               </p>
             </div>
 
