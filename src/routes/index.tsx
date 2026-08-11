@@ -79,13 +79,14 @@ function ProductCard({ product }: { product: ProductWithUrl }) {
         )}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/70 to-transparent opacity-70" />
         <span
-          className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.18em] backdrop-blur ${
+          className={`absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.18em] backdrop-blur ${
             available
               ? "bg-primary/15 text-primary"
               : "bg-destructive/15 text-destructive"
           }`}
         >
-          {available ? "🟢 Disponível" : "🔴 Esgotado"}
+          {available ? <Check className="size-3" /> : <Circle className="size-3" />}
+          {available ? "Disponível" : "Esgotado"}
         </span>
       </div>
 
