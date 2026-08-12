@@ -25,9 +25,10 @@ export async function settlePaymentFromGateway(
     event_key: `payment:${payment.id}:${payment.status}`,
     payload: (payload ?? null) as never,
   });
-  if (eventError) {
-    // Unique violation means we already processed this exact event.
-    if (eventError.code === "23505") return { handled: false, reason: "duplicate_event" };
+  // Unique violation (23505) means this exact event was already delivered.
+  // We still continue: every write below is conditional on the order being
+  // pending, so duplicates can never produce a second paid order.
+  if (eventError && eventError.code !== "23505") {
     console.error("[payments] failed to record webhook event", eventError);
   }
 
