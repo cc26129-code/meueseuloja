@@ -14,6 +14,116 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          order_id: string | null
+          read_at: string | null
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          read_at?: string | null
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          read_at?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_contact: string
+          customer_name: string
+          expires_at: string | null
+          gateway_payment_id: string | null
+          gateway_qr_code: string | null
+          gateway_qr_code_base64: string | null
+          id: string
+          items: Json
+          paid_at: string | null
+          payment_method: string
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_contact: string
+          customer_name: string
+          expires_at?: string | null
+          gateway_payment_id?: string | null
+          gateway_qr_code?: string | null
+          gateway_qr_code_base64?: string | null
+          id?: string
+          items?: Json
+          paid_at?: string | null
+          payment_method?: string
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_contact?: string
+          customer_name?: string
+          expires_at?: string | null
+          gateway_payment_id?: string | null
+          gateway_qr_code?: string | null
+          gateway_qr_code_base64?: string | null
+          id?: string
+          items?: Json
+          paid_at?: string | null
+          payment_method?: string
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_webhook_events: {
+        Row: {
+          event_key: string
+          id: string
+          payload: Json | null
+          processed_at: string
+          provider: string
+        }
+        Insert: {
+          event_key: string
+          id?: string
+          payload?: Json | null
+          processed_at?: string
+          provider?: string
+        }
+        Update: {
+          event_key?: string
+          id?: string
+          payload?: Json | null
+          processed_at?: string
+          provider?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           created_at: string
@@ -83,6 +193,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      payment_status: "pending" | "paid" | "failed" | "expired" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -211,6 +322,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      payment_status: ["pending", "paid", "failed", "expired", "cancelled"],
     },
   },
 } as const
