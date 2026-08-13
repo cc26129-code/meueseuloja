@@ -113,76 +113,74 @@ export function ProductShowcase() {
   return (
     <section
       aria-label="Vitrine de destaques"
-      className="border-b border-border bg-linear-to-b from-background to-secondary/20"
+      className="border-b border-border bg-linear-to-b from-background to-secondary/20 pb-12 sm:pb-16 pt-12 sm:pt-16"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="mx-auto w-full max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="flex flex-wrap items-center justify-end gap-4">
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="size-10 rounded-full"
-              aria-label="Produto anterior"
-              onClick={() => emblaApi?.scrollPrev()}
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="size-10 rounded-full"
-              aria-label="Próximo produto"
-              onClick={() => emblaApi?.scrollNext()}
-            >
-              <ChevronRight className="size-4" />
-            </Button>
+      <div className="relative">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="absolute left-2 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full lg:left-4"
+          aria-label="Produto anterior"
+          onClick={() => emblaApi?.scrollPrev()}
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="absolute right-2 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full lg:right-4"
+          aria-label="Próximo produto"
+          onClick={() => emblaApi?.scrollNext()}
+        >
+          <ChevronRight className="size-4" />
+        </Button>
+
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
+          <div className="-mx-5 overflow-hidden sm:-mx-8" ref={emblaRef}>
+            <div className="flex touch-pan-y gap-5 pl-12 pr-12 sm:pl-12 sm:pr-12 lg:pl-14 lg:pr-14">
+              {isLoading
+                ? [0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="min-w-0 shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                    >
+                      <Skeleton className="aspect-4/3 w-full rounded-3xl" />
+                    </div>
+                  ))
+                : products.map((p) => (
+                    <div
+                      key={p.id}
+                      className="min-w-0 shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                    >
+                      <ShowcaseCard product={p} />
+                    </div>
+                  ))}
+            </div>
           </div>
         </div>
-
-        <div className="-mx-5 mt-8 overflow-hidden sm:-mx-8" ref={emblaRef}>
-          <div className="flex touch-pan-y gap-5 pl-5 pr-5 sm:pl-8 sm:pr-8">
-            {isLoading
-              ? [0, 1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="min-w-0 shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                  >
-                    <Skeleton className="aspect-4/3 w-full rounded-3xl" />
-                  </div>
-                ))
-              : products.map((p) => (
-                  <div
-                    key={p.id}
-                    className="min-w-0 shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                  >
-                    <ShowcaseCard product={p} />
-                  </div>
-                ))}
-          </div>
-        </div>
-
-        {snaps.length > 1 ? (
-          <div className="mt-6 flex justify-center gap-2">
-            {snaps.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Ir para o slide ${i + 1}`}
-                onClick={() => emblaApi?.scrollTo(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === selected ? "w-6 bg-primary" : "w-1.5 bg-border hover:bg-primary/50"
-                }`}
-              />
-            ))}
-          </div>
-        ) : null}
       </div>
+
+      {snaps.length > 1 ? (
+        <div className="mx-auto mt-6 flex w-full max-w-7xl justify-center gap-2 px-5 sm:px-8">
+          {snaps.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Ir para o slide ${i + 1}`}
+              onClick={() => emblaApi?.scrollTo(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === selected ? "w-6 bg-primary" : "w-1.5 bg-border hover:bg-primary/50"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
