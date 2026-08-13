@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { readJSON, writeJSON } from "@/lib/storage";
+
 const STORAGE_KEY = "meueseuloja:favorites:v1";
 
 type FavoritesContextValue = {
@@ -13,16 +15,9 @@ type FavoritesContextValue = {
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
-function read(): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((i): i is string => typeof i === "string");
-  } catch {
-    return [];
-  }
+function parseIds(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((i): i is string => typeof i === "string");
 }
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
@@ -30,27 +25,23 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setIds(read());
+    setIds(parseIds(readJSON(STORAGE_KEY)));
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-    } catch {
-      /* ignore quota errors */
-    }
+    writeJSON(STORAGE_KEY, ids);
   }, [ids, hydrated]);
 
   const value = useMemo<FavoritesContextValue>(
     () => ({
       ids,
       count: ids.length,
-      isFavorite: (id: string) => ids.includes(id),
-      toggle: (id: string) =>
+      isFavorite: (id) => ids.includes(id),
+      toggle: (id) =>
         setIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id])),
-      remove: (id: string) => setIds((prev) => prev.filter((i) => i !== id)),
+      remove: (id) => setIds((prev) => prev.filter((i) => i !== id)),
       clear: () => setIds([]),
     }),
     [ids],
