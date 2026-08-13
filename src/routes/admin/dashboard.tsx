@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useNavigate, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ImagePlus, Loader2, LogOut, Pencil, Plus, Store, Trash2 } from "lucide-react";
+import { ImagePlus, Loader2, LogOut, Pencil, Plus, Receipt, Store, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -240,6 +240,12 @@ function Dashboard() {
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
+            <Button asChild variant="ghost" size="sm" className="rounded-xl">
+              <Link to="/admin/pedidos">
+                <Receipt className="size-4 sm:mr-2" />
+                <span className="hidden sm:inline">Pedidos</span>
+              </Link>
+            </Button>
             <Button asChild variant="ghost" size="sm" className="rounded-xl">
               <Link to="/">
                 <Store className="size-4 sm:mr-2" />

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,6 +15,7 @@ import { useCart } from "@/lib/cart";
 import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
 
 export function CartSheet() {
+  const navigate = useNavigate();
   const { items, open, setOpen, setQty, remove, clear } = useCart();
   const { data } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
   const products = (data ?? []) as ProductWithUrl[];
@@ -42,9 +44,8 @@ export function CartSheet() {
       );
       return;
     }
-    toast.success("Pedido enviado! Entraremos em contato para combinar os detalhes.");
-    clear();
     setOpen(false);
+    void navigate({ to: "/checkout" });
   }
 
   return (
@@ -148,7 +149,7 @@ export function CartSheet() {
               <span className="font-display text-3xl text-primary">{formatBRL(total)}</span>
             </div>
             <Button className="w-full rounded-full" disabled={hasIssue} onClick={checkout}>
-              Enviar pedido
+              Finalizar e pagar com PIX
             </Button>
             <Button variant="ghost" className="w-full rounded-full" onClick={clear}>
               Esvaziar carrinho
