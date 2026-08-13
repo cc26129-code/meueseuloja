@@ -113,7 +113,7 @@ export function ProductShowcase() {
   return (
     <section
       aria-label="Vitrine de destaques"
-      className="border-b border-border bg-linear-to-b from-background to-secondary/20"
+      className="border-b border-border bg-linear-to-b from-background to-secondary/20 pb-12 sm:pb-16 pt-12 sm:pt-16"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -141,7 +141,7 @@ export function ProductShowcase() {
           <ChevronRight className="size-4" />
         </Button>
 
-        <div className="mx-auto w-full max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
+        <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
           <div className="-mx-5 overflow-hidden sm:-mx-8" ref={emblaRef}>
             <div className="flex touch-pan-y gap-5 pl-12 pr-12 sm:pl-12 sm:pr-12 lg:pl-14 lg:pr-14">
               {isLoading
@@ -163,24 +163,24 @@ export function ProductShowcase() {
                   ))}
             </div>
           </div>
-
-          {snaps.length > 1 ? (
-            <div className="mt-6 flex justify-center gap-2">
-              {snaps.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`Ir para o slide ${i + 1}`}
-                  onClick={() => emblaApi?.scrollTo(i)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === selected ? "w-6 bg-primary" : "w-1.5 bg-border hover:bg-primary/50"
-                  }`}
-                />
-              ))}
-            </div>
-          ) : null}
         </div>
       </div>
+
+      {snaps.length > 1 ? (
+        <div className="mx-auto mt-6 flex w-full max-w-7xl justify-center gap-2 px-5 sm:px-8">
+          {snaps.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Ir para o slide ${i + 1}`}
+              onClick={() => emblaApi?.scrollTo(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === selected ? "w-6 bg-primary" : "w-1.5 bg-border hover:bg-primary/50"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
