@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as ApiPublicWebhooksMercadopagoRouteImport } from './routes/api/public/webhooks/mercadopago'
@@ -17,6 +18,11 @@ import { Route as ApiPublicWebhooksMercadopagoRouteImport } from './routes/api/p
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -38,12 +44,14 @@ const ApiPublicWebhooksMercadopagoRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin': typeof AdminIndexRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
@@ -51,6 +59,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/': typeof AdminIndexRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
@@ -58,12 +67,22 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/admin/dashboard' | '/admin/' | '/api/public/webhooks/mercadopago'
+    | '/'
+    | '/checkout'
+    | '/admin/dashboard'
+    | '/admin/'
+    | '/api/public/webhooks/mercadopago'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/dashboard' | '/admin' | '/api/public/webhooks/mercadopago'
+  to:
+    | '/'
+    | '/checkout'
+    | '/admin/dashboard'
+    | '/admin'
+    | '/api/public/webhooks/mercadopago'
   id:
     | '__root__'
     | '/'
+    | '/checkout'
     | '/admin/dashboard'
     | '/admin/'
     | '/api/public/webhooks/mercadopago'
@@ -71,6 +90,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CheckoutRoute: typeof CheckoutRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ApiPublicWebhooksMercadopagoRoute: typeof ApiPublicWebhooksMercadopagoRoute
@@ -83,6 +103,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -111,6 +138,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CheckoutRoute: CheckoutRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminIndexRoute: AdminIndexRoute,
   ApiPublicWebhooksMercadopagoRoute: ApiPublicWebhooksMercadopagoRoute,
