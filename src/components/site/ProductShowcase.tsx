@@ -113,7 +113,7 @@ export function ProductShowcase() {
   return (
     <section
       aria-label="Vitrine de destaques"
-      className="border-b border-border bg-linear-to-b from-background to-secondary/20 pb-12 sm:pb-16 pt-12 sm:pt-16"
+      className="border-b border-border bg-linear-to-b from-background to-secondary/20 pb-12 sm:pb-16 pt-12 sm:pt-16 mt-20 sm:mt-24"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
