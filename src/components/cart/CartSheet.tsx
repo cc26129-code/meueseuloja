@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { ProductImage } from "@/components/products/ProductImage";
+import { QuantityStepper } from "@/components/products/QuantityStepper";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,34 +12,27 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { useCart } from "@/lib/cart";
-import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
+import { useCartLines } from "@/hooks/use-cart-lines";
+import { formatBRL, pluralize } from "@/lib/format";
+import { useCart } from "@/providers/cart-provider";
 
 export function CartSheet() {
   const navigate = useNavigate();
-  const { items, open, setOpen, setQty, remove, clear } = useCart();
-  const { data } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const products = (data ?? []) as ProductWithUrl[];
-  const byId = new Map(products.map((p) => [p.id, p]));
+  const { open, setOpen, setQty, remove, clear } = useCart();
+  const { lines, total, hasStockIssue } = useCartLines();
 
-  const lines = items
-    .map((i) => ({ item: i, product: byId.get(i.id) }))
-    .filter((l): l is { item: typeof l.item; product: ProductWithUrl } => !!l.product);
-
-  const total = lines.reduce((sum, l) => sum + Number(l.product.price) * l.item.qty, 0);
-  const hasIssue = lines.some((l) => l.item.qty > l.product.stock_quantity);
-
-  function inc(productId: string, current: number, stock: number) {
+  function increase(productId: string, current: number, stock: number) {
     if (current + 1 > stock) {
-      toast.error(`Quantidade máxima disponível: ${stock} unidade${stock === 1 ? "" : "s"}.`);
+      toast.error(
+        `Quantidade máxima disponível: ${stock} ${pluralize(stock, "unidade", "unidades")}.`,
+      );
       return;
     }
     setQty(productId, current + 1);
   }
 
-  function checkout() {
-    const stale = lines.find((l) => l.item.qty > l.product.stock_quantity);
-    if (stale) {
+  function goToCheckout() {
+    if (hasStockIssue) {
       toast.error(
         "A quantidade disponível deste produto foi alterada. Atualize a quantidade do seu carrinho.",
       );
@@ -73,17 +67,7 @@ export function CartSheet() {
                   className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-4 rounded-2xl border border-border bg-background/60 p-3 shadow-soft"
                 >
                   <div className="aspect-square overflow-hidden rounded-xl bg-secondary">
-                    {product.signedUrl ? (
-                      <img
-                        src={product.signedUrl}
-                        alt={product.name}
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      <div className="grid size-full place-items-center text-muted-foreground">
-                        <ShoppingBag className="size-4" />
-                      </div>
-                    )}
+                    <ProductImage product={product} fallback={<ShoppingBag className="size-4" />} />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-start justify-between gap-2">
@@ -102,29 +86,14 @@ export function CartSheet() {
                     </p>
 
                     <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-1 rounded-full border border-border p-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="size-7 rounded-full"
-                          aria-label="Diminuir"
-                          onClick={() => setQty(item.id, item.qty - 1)}
-                        >
-                          <Minus className="size-3.5" />
-                        </Button>
-                        <span className="w-6 text-center text-sm">{item.qty}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="size-7 rounded-full"
-                          aria-label="Aumentar"
-                          onClick={() => inc(item.id, item.qty, product.stock_quantity)}
-                        >
-                          <Plus className="size-3.5" />
-                        </Button>
-                      </div>
+                      <QuantityStepper
+                        size="sm"
+                        value={item.qty}
+                        decreaseLabel="Diminuir"
+                        increaseLabel="Aumentar"
+                        onDecrease={() => setQty(item.id, item.qty - 1)}
+                        onIncrease={() => increase(item.id, item.qty, product.stock_quantity)}
+                      />
                       <p className="text-sm text-primary">
                         {formatBRL(Number(product.price) * item.qty)}
                       </p>
@@ -148,7 +117,11 @@ export function CartSheet() {
               <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
               <span className="font-display text-3xl text-primary">{formatBRL(total)}</span>
             </div>
-            <Button className="w-full rounded-full" disabled={hasIssue} onClick={checkout}>
+            <Button
+              className="w-full rounded-full"
+              disabled={hasStockIssue}
+              onClick={goToCheckout}
+            >
               Finalizar e pagar com PIX
             </Button>
             <Button variant="ghost" className="w-full rounded-full" onClick={clear}>
