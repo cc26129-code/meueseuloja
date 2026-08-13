@@ -30,7 +30,7 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-linear-to-b from-card to-secondary/40 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-linear-to-b from-card to-secondary/40 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
       <button
         type="button"
         onClick={() => {
