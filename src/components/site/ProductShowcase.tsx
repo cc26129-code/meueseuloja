@@ -120,33 +120,30 @@ export function ProductShowcase() {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="mx-auto w-full max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="flex flex-wrap items-center justify-end gap-4">
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="size-10 rounded-full"
-              aria-label="Produto anterior"
-              onClick={() => emblaApi?.scrollPrev()}
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="size-10 rounded-full"
-              aria-label="Próximo produto"
-              onClick={() => emblaApi?.scrollNext()}
-            >
-              <ChevronRight className="size-4" />
-            </Button>
-          </div>
-        </div>
+        <div className="relative">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="absolute left-2 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full lg:left-4"
+            aria-label="Produto anterior"
+            onClick={() => emblaApi?.scrollPrev()}
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="absolute right-2 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full lg:right-4"
+            aria-label="Próximo produto"
+            onClick={() => emblaApi?.scrollNext()}
+          >
+            <ChevronRight className="size-4" />
+          </Button>
 
-        <div className="-mx-5 mt-8 overflow-hidden sm:-mx-8" ref={emblaRef}>
-          <div className="flex touch-pan-y gap-5 pl-5 pr-5 sm:pl-8 sm:pr-8">
+          <div className="-mx-5 overflow-hidden sm:-mx-8" ref={emblaRef}>
+            <div className="flex touch-pan-y gap-5 pl-12 pr-12 sm:pl-12 sm:pr-12 lg:pl-14 lg:pr-14">
             {isLoading
               ? [0, 1, 2, 3].map((i) => (
                   <div
