@@ -20,7 +20,10 @@ export default defineMcp({
     acceptedAudiences: "authenticated",
   }),
   // Cast keeps exactOptionalPropertyTypes happy with the SDK tool type.
-  tools: [listProductsTool, updateStockTool, listOrdersTool, storeSummaryTool] as Parameters<
-    typeof defineMcp
-  >[0]["tools"],
+  tools: [
+    listProductsTool,
+    updateStockTool,
+    listOrdersTool,
+    storeSummaryTool,
+  ] as unknown as Parameters<typeof defineMcp>[0]["tools"],
 });
