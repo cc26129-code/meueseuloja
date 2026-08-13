@@ -42,9 +42,8 @@ export function CartSheet() {
       );
       return;
     }
-    toast.success("Pedido enviado! Entraremos em contato para combinar os detalhes.");
-    clear();
     setOpen(false);
+    void navigate({ to: "/checkout" });
   }
 
   return (
