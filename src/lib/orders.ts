@@ -11,6 +11,14 @@ export type PaymentStatus = "pending" | "paid" | "failed" | "expired" | "cancell
 export type PublicOrder = {
   id: string;
   total_amount: number;
+  subtotal: number;
+  shipping_amount: number;
+  shipping_carrier: string | null;
+  shipping_service: string | null;
+  shipping_deadline: number | null;
+  delivery_postal_code: string | null;
+  delivery_address: string | null;
+  tracking_code: string | null;
   payment_status: PaymentStatus;
   payment_method: string;
   items: OrderItem[];

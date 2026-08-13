@@ -11,6 +11,10 @@ export type ProductInput = {
   description: string;
   stock_quantity: number;
   image_url: string | null;
+  weight_kg: number;
+  height_cm: number;
+  width_cm: number;
+  length_cm: number;
 };
 
 export async function fetchProducts(): Promise<ProductWithUrl[]> {

@@ -8,7 +8,10 @@ import type { PublicOrder } from "./orders";
 const checkoutSchema = z.object({
   customer_name: z.string().trim().min(2).max(80),
   customer_contact: z.string().trim().min(8).max(40),
-  shipping_address: z.string().trim().max(500).optional(),
+  shipping_address: z.string().trim().min(5).max(500),
+  postal_code: z.string().trim().min(8).max(9),
+  shipping_quote_id: z.string().uuid(),
+  shipping_service_id: z.string().trim().min(1).max(50),
   items: z
     .array(
       z.object({
@@ -22,27 +25,62 @@ const checkoutSchema = z.object({
 
 export const createPixOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => checkoutSchema.parse(data))
+  .validator((data: unknown) => checkoutSchema.parse(data))
   .handler(async ({ data, context }): Promise<PublicOrder> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { createPixPayment } = await import("./mercadopago.server");
-    const { buildOrderItems, resolveSiteOrigin } = await import("./checkout.server");
+    const { buildOrderItems, fromCents, resolveSiteOrigin, toCents } =
+      await import("./checkout.server");
+    const { calculateShipping, normalizePostalCode } = await import("./shipping.server");
 
-    const ids = [...new Set(data.items.map((i) => i.id))];
     const { data: customer } = await supabaseAdmin
       .from("profiles")
       .select("email")
       .eq("id", context.userId)
       .single();
     if (!customer) throw new Error("Conta de usuário não encontrada.");
-    const { data: products, error } = await supabaseAdmin
-      .from("products")
-      .select("id, name, price, stock_quantity")
-      .in("id", ids);
-    if (error) throw new Error("Não foi possível validar os produtos.");
 
-    // Prices, subtotals and total are recalculated here from the database.
-    const { items, total } = buildOrderItems(data.items, products ?? []);
+    const postalCode = normalizePostalCode(data.postal_code);
+    const { data: storedQuote } = await supabaseAdmin
+      .from("shipping_quotes")
+      .select("id, destination_postal_code, cart_fingerprint, options, created_at, expires_at")
+      .eq("id", data.shipping_quote_id)
+      .eq("user_id", context.userId)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+    if (!storedQuote || storedQuote.destination_postal_code !== postalCode) {
+      throw new Error("A cotação expirou. Calcule o frete novamente.");
+    }
+
+    const previousOptions = Array.isArray(storedQuote.options)
+      ? (storedQuote.options as Array<Record<string, unknown>>)
+      : [];
+    const previousOption = previousOptions.find(
+      (option) => String(option.service_id) === data.shipping_service_id,
+    );
+    if (!previousOption) throw new Error("A opção de frete selecionada não é válida.");
+
+    // Critical security check: products and shipping are fetched again immediately before PIX.
+    const freshQuote = await calculateShipping(data.items, postalCode);
+    if (freshQuote.cart.fingerprint !== storedQuote.cart_fingerprint) {
+      throw new Error("O carrinho ou os produtos mudaram. Calcule o frete novamente.");
+    }
+    const selectedShipping = freshQuote.options.find(
+      (option) => option.service_id === data.shipping_service_id,
+    );
+    if (!selectedShipping) {
+      throw new Error("O frete escolhido não está mais disponível. Calcule novamente.");
+    }
+    if (toCents(selectedShipping.price) !== toCents(Number(previousOption.price))) {
+      throw new Error("O valor do frete mudou. Calcule novamente antes de gerar o PIX.");
+    }
+
+    const { items, subtotal, subtotalCents } = buildOrderItems(
+      data.items,
+      freshQuote.cart.products,
+    );
+    const shippingCents = toCents(selectedShipping.price);
+    const total = fromCents(subtotalCents + shippingCents);
 
     const origin = resolveSiteOrigin(getRequest().url);
 
@@ -52,9 +90,22 @@ export const createPixOrder = createServerFn({ method: "POST" })
         customer_name: data.customer_name,
         customer_contact: data.customer_contact,
         customer_email: customer.email,
-        shipping_address: data.shipping_address?.trim() || null,
+        shipping_address: data.shipping_address.trim(),
+        delivery_address: {
+          address: data.shipping_address.trim(),
+          postal_code: postalCode,
+        } as never,
+        delivery_postal_code: postalCode,
         user_id: context.userId,
         items: items as never,
+        subtotal,
+        shipping_amount: selectedShipping.price,
+        shipping_carrier: selectedShipping.carrier,
+        shipping_service: selectedShipping.service,
+        shipping_service_id: selectedShipping.service_id,
+        shipping_deadline: selectedShipping.delivery_days,
+        shipping_quote_id: storedQuote.id,
+        shipping_quoted_at: storedQuote.created_at,
         total_amount: total,
         payment_method: "pix",
         payment_status: "pending",
@@ -113,6 +164,14 @@ export const createPixOrder = createServerFn({ method: "POST" })
     return {
       id: row.id,
       total_amount: Number(row.total_amount),
+      subtotal: Number(row.subtotal),
+      shipping_amount: Number(row.shipping_amount),
+      shipping_carrier: row.shipping_carrier,
+      shipping_service: row.shipping_service,
+      shipping_deadline: row.shipping_deadline,
+      delivery_postal_code: row.delivery_postal_code,
+      delivery_address: row.shipping_address,
+      tracking_code: row.tracking_code,
       payment_status: row.payment_status,
       payment_method: row.payment_method,
       items,
@@ -126,7 +185,7 @@ export const createPixOrder = createServerFn({ method: "POST" })
 
 export const getPublicOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }): Promise<PublicOrder | null> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -156,6 +215,14 @@ export const getPublicOrder = createServerFn({ method: "POST" })
     return {
       id: order.id,
       total_amount: Number(order.total_amount),
+      subtotal: Number(order.subtotal),
+      shipping_amount: Number(order.shipping_amount),
+      shipping_carrier: order.shipping_carrier,
+      shipping_service: order.shipping_service,
+      shipping_deadline: order.shipping_deadline,
+      delivery_postal_code: order.delivery_postal_code,
+      delivery_address: order.shipping_address,
+      tracking_code: order.tracking_code,
       payment_status: order.payment_status,
       payment_method: order.payment_method,
       items: (order.items ?? []) as never,

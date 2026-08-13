@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle2, Clock, Copy, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, Copy, Truck, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -189,11 +189,44 @@ function OrderPage() {
                 ))}
               </div>
               <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
-                <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
-                <span className="font-display text-3xl text-primary">
-                  {formatBRL(Number(order.total_amount))}
-                </span>
+                <div className="w-full space-y-2">
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{formatBRL(Number(order.subtotal))}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span className="flex items-center gap-2">
+                      <Truck className="size-4" /> Frete
+                    </span>
+                    <span>{formatBRL(Number(order.shipping_amount))}</span>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-xs uppercase tracking-luxe text-muted-foreground">
+                      Total
+                    </span>
+                    <span className="font-display text-3xl text-primary">
+                      {formatBRL(Number(order.total_amount))}
+                    </span>
+                  </div>
+                </div>
               </div>
+              {order.shipping_carrier && (
+                <div className="mt-6 rounded-xl bg-background/60 p-4 text-sm">
+                  <p className="text-xs uppercase tracking-widest text-primary">Entrega</p>
+                  <p className="mt-2">
+                    {order.shipping_carrier} — {order.shipping_service}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    CEP {order.delivery_postal_code ?? "-"}
+                    {order.shipping_deadline ? ` | até ${order.shipping_deadline} dias úteis` : ""}
+                  </p>
+                  {order.tracking_code && (
+                    <p className="mt-2 break-all text-xs text-muted-foreground">
+                      Código de rastreio: {order.tracking_code}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}

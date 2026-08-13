@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Clock3, PackageOpen } from "lucide-react";
+import { Clock3, PackageOpen, Truck } from "lucide-react";
 import { useEffect } from "react";
 
 import { Footer } from "@/components/layout/Footer";
@@ -118,6 +118,27 @@ function MyOrdersPage() {
                       </div>
                     ))}
                   </div>
+                  {order.shipping_carrier && (
+                    <div className="mt-4 rounded-xl bg-background/60 p-4 text-sm">
+                      <p className="flex items-center gap-2 text-xs uppercase tracking-widest text-primary">
+                        <Truck className="size-4" /> Entrega
+                      </p>
+                      <p className="mt-2">
+                        {order.shipping_carrier} — {order.shipping_service}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Frete: {formatBRL(Number(order.shipping_amount))}
+                        {order.shipping_deadline
+                          ? ` | prazo estimado de até ${order.shipping_deadline} dias úteis`
+                          : ""}
+                      </p>
+                      {order.tracking_code && (
+                        <p className="mt-2 break-all text-xs text-muted-foreground">
+                          Código de rastreio: {order.tracking_code}
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
                     <span>Pagamento: {order.payment_method.toUpperCase()}</span>
                     {order.payment_status === "pending" && (

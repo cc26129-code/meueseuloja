@@ -72,6 +72,10 @@ type FormState = {
   price: string;
   description: string;
   stock: string;
+  weight: string;
+  height: string;
+  width: string;
+  length: string;
   file: File | null;
   currentImage: string | null;
   preview: string | null;
@@ -82,6 +86,10 @@ const emptyForm: FormState = {
   price: "",
   description: "",
   stock: "0",
+  weight: "",
+  height: "",
+  width: "",
+  length: "",
   file: null,
   currentImage: null,
   preview: null,
@@ -131,6 +139,10 @@ function Dashboard() {
         price: Number(state.price.replace(",", ".")),
         description: state.description.trim(),
         stock_quantity: Math.max(0, Math.floor(Number(state.stock || "0"))),
+        weight_kg: Number(state.weight.replace(",", ".")),
+        height_cm: Number(state.height.replace(",", ".")),
+        width_cm: Number(state.width.replace(",", ".")),
+        length_cm: Number(state.length.replace(",", ".")),
         image_url: imagePath,
       };
 
@@ -168,6 +180,10 @@ function Dashboard() {
       price: String(p.price),
       description: p.description ?? "",
       stock: String(p.stock_quantity ?? 0),
+      weight: p.weight_kg == null ? "" : String(p.weight_kg),
+      height: p.height_cm == null ? "" : String(p.height_cm),
+      width: p.width_cm == null ? "" : String(p.width_cm),
+      length: p.length_cm == null ? "" : String(p.length_cm),
       file: null,
       currentImage: p.image_url,
       preview: p.signedUrl ?? null,
@@ -201,6 +217,13 @@ function Dashboard() {
     }
     if (form.description.trim().length < 5) {
       toast.error("Escreva uma breve descrição.");
+      return;
+    }
+    const physicalValues = [form.weight, form.height, form.width, form.length].map((value) =>
+      Number(value.replace(",", ".")),
+    );
+    if (physicalValues.some((value) => !Number.isFinite(value) || value <= 0)) {
+      toast.error("Informe peso e dimensões maiores que zero para calcular o frete.");
       return;
     }
     save.mutate(form);
@@ -478,6 +501,40 @@ function Dashboard() {
               <p className="text-xs text-muted-foreground">
                 O estoque só muda quando você editar aqui; pedidos no carrinho não descontam nada.
               </p>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs uppercase tracking-widest">Dados para o frete</Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Peso em quilogramas e dimensões da embalagem em centímetros.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  ["weight", "Peso (kg)"],
+                  ["height", "Altura (cm)"],
+                  ["width", "Largura (cm)"],
+                  ["length", "Comprimento (cm)"],
+                ].map(([field, label]) => (
+                  <div key={field} className="space-y-2">
+                    <Label htmlFor={field} className="text-xs text-muted-foreground">
+                      {label}
+                    </Label>
+                    <Input
+                      id={field}
+                      inputMode="decimal"
+                      value={form[field as "weight" | "height" | "width" | "length"]}
+                      onChange={(event) =>
+                        setForm((current) => ({ ...current, [field]: event.target.value }))
+                      }
+                      placeholder="0,00"
+                      className="rounded-xl"
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-2">

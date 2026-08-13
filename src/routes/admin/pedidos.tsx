@@ -2,15 +2,16 @@ import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-ro
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Bell, ChevronDown, ChevronUp, LogOut, Package, Store } from "lucide-react";
+import { Bell, ChevronDown, ChevronUp, LogOut, Package, Store, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { orderNumber, paymentStatusLabel, type OrderItem, type PaymentStatus } from "@/lib/orders";
 import { formatBRL } from "@/lib/format";
-import { updateOrderStatus } from "@/lib/admin-orders.functions";
+import { updateOrderStatus, updateTrackingCode } from "@/lib/admin-orders.functions";
 import { orderStatusLabel, type OrderStatus } from "@/types/account";
 
 export const Route = createFileRoute("/admin/pedidos")({
@@ -60,6 +61,8 @@ function OrdersPage() {
   const [checked, setChecked] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const changeStatus = useServerFn(updateOrderStatus);
+  const changeTracking = useServerFn(updateTrackingCode);
+  const [trackingValues, setTrackingValues] = useState<Record<string, string>>({});
 
   useEffect(() => {
     void supabase.auth.getUser().then(({ data }) => {
@@ -128,6 +131,17 @@ function OrdersPage() {
       toast.success("Status do pedido atualizado.");
     } catch {
       toast.error("Não foi possível atualizar o status.");
+    }
+  }
+
+  async function saveTracking(orderId: string, currentValue: string | null) {
+    const value = trackingValues[orderId] ?? currentValue ?? "";
+    try {
+      await changeTracking({ data: { orderId, trackingCode: value } });
+      await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      toast.success(value ? "Código de rastreio salvo." : "Código de rastreio removido.");
+    } catch {
+      toast.error("Não foi possível salvar o código de rastreio.");
     }
   }
 
@@ -247,6 +261,11 @@ function OrdersPage() {
                       <p className="mt-2 font-display text-2xl text-primary">
                         {formatBRL(Number(order.total_amount))}
                       </p>
+                      {Number(order.shipping_amount) > 0 && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Inclui {formatBRL(Number(order.shipping_amount))} de frete
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -305,12 +324,48 @@ function OrdersPage() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-primary">
-                          Entrega e pagamento
+                        <p className="flex items-center gap-2 text-xs uppercase tracking-widest text-primary">
+                          <Truck className="size-4" /> Entrega e frete
                         </p>
                         <p className="mt-2 whitespace-pre-wrap">
                           {order.shipping_address || "Endereço não informado"}
                         </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          CEP: {order.delivery_postal_code ?? "-"}
+                        </p>
+                        <p className="mt-2 text-sm">
+                          {order.shipping_carrier && order.shipping_service
+                            ? `${order.shipping_carrier} — ${order.shipping_service}`
+                            : "Frete não registrado"}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Frete: {formatBRL(Number(order.shipping_amount ?? 0))}
+                          {order.shipping_deadline
+                            ? ` | até ${order.shipping_deadline} dias úteis`
+                            : ""}
+                        </p>
+                        <div className="mt-3 flex gap-2">
+                          <Input
+                            value={trackingValues[order.id] ?? order.tracking_code ?? ""}
+                            onChange={(event) =>
+                              setTrackingValues((current) => ({
+                                ...current,
+                                [order.id]: event.target.value,
+                              }))
+                            }
+                            placeholder="Código de rastreio"
+                            maxLength={100}
+                            className="h-9 rounded-xl"
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            className="rounded-xl"
+                            onClick={() => void saveTracking(order.id, order.tracking_code)}
+                          >
+                            Salvar
+                          </Button>
+                        </div>
                         <p className="mt-2 text-xs text-muted-foreground">
                           Transação: {order.gateway_payment_id ?? "-"} | PIX
                         </p>

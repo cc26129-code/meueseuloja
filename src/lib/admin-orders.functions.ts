@@ -33,3 +33,27 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     if (error) throw new Error("Não foi possível atualizar o pedido.");
     return { ok: true };
   });
+
+const trackingSchema = z.object({
+  orderId: z.string().uuid(),
+  trackingCode: z.string().trim().max(100),
+});
+
+export const updateTrackingCode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((data: unknown) => trackingSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Acesso não autorizado.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("orders")
+      .update({ tracking_code: data.trackingCode || null })
+      .eq("id", data.orderId);
+    if (error) throw new Error("Não foi possível atualizar o código de rastreio.");
+    return { ok: true };
+  });

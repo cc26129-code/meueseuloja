@@ -5,6 +5,10 @@ export type Product = {
   description: string;
   image_url: string | null;
   stock_quantity: number;
+  weight_kg: number | null;
+  height_cm: number | null;
+  width_cm: number | null;
+  length_cm: number | null;
   created_at: string;
   updated_at: string;
 };

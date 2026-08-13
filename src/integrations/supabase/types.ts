@@ -15,6 +15,7 @@ export type Database = {
           id: string;
           is_default: boolean;
           label: string;
+          postal_code: string | null;
           updated_at: string;
           user_id: string;
         };
@@ -24,6 +25,7 @@ export type Database = {
           id?: string;
           is_default?: boolean;
           label?: string;
+          postal_code?: string | null;
           updated_at?: string;
           user_id: string;
         };
@@ -33,6 +35,7 @@ export type Database = {
           id?: string;
           is_default?: boolean;
           label?: string;
+          postal_code?: string | null;
           updated_at?: string;
           user_id?: string;
         };
@@ -87,6 +90,8 @@ export type Database = {
           customer_contact: string;
           customer_name: string;
           customer_email: string | null;
+          delivery_address: Json | null;
+          delivery_postal_code: string | null;
           expires_at: string | null;
           gateway_payment_id: string | null;
           gateway_qr_code: string | null;
@@ -97,16 +102,27 @@ export type Database = {
           paid_at: string | null;
           payment_method: string;
           payment_status: Database["public"]["Enums"]["payment_status"];
+          shipping_amount: number;
           total_amount: number;
+          subtotal: number;
           updated_at: string;
           user_id: string | null;
           shipping_address: string | null;
+          shipping_carrier: string | null;
+          shipping_deadline: number | null;
+          shipping_quote_id: string | null;
+          shipping_quoted_at: string | null;
+          shipping_service: string | null;
+          shipping_service_id: string | null;
+          tracking_code: string | null;
         };
         Insert: {
           created_at?: string;
           customer_contact: string;
           customer_name: string;
           customer_email?: string | null;
+          delivery_address?: Json | null;
+          delivery_postal_code?: string | null;
           expires_at?: string | null;
           gateway_payment_id?: string | null;
           gateway_qr_code?: string | null;
@@ -117,16 +133,27 @@ export type Database = {
           paid_at?: string | null;
           payment_method?: string;
           payment_status?: Database["public"]["Enums"]["payment_status"];
+          shipping_amount?: number;
+          subtotal?: number;
           total_amount?: number;
           updated_at?: string;
           user_id?: string | null;
           shipping_address?: string | null;
+          shipping_carrier?: string | null;
+          shipping_deadline?: number | null;
+          shipping_quote_id?: string | null;
+          shipping_quoted_at?: string | null;
+          shipping_service?: string | null;
+          shipping_service_id?: string | null;
+          tracking_code?: string | null;
         };
         Update: {
           created_at?: string;
           customer_contact?: string;
           customer_name?: string;
           customer_email?: string | null;
+          delivery_address?: Json | null;
+          delivery_postal_code?: string | null;
           expires_at?: string | null;
           gateway_payment_id?: string | null;
           gateway_qr_code?: string | null;
@@ -137,10 +164,19 @@ export type Database = {
           paid_at?: string | null;
           payment_method?: string;
           payment_status?: Database["public"]["Enums"]["payment_status"];
+          shipping_amount?: number;
+          subtotal?: number;
           total_amount?: number;
           updated_at?: string;
           user_id?: string | null;
           shipping_address?: string | null;
+          shipping_carrier?: string | null;
+          shipping_deadline?: number | null;
+          shipping_quote_id?: string | null;
+          shipping_quoted_at?: string | null;
+          shipping_service?: string | null;
+          shipping_service_id?: string | null;
+          tracking_code?: string | null;
         };
         Relationships: [
           {
@@ -334,34 +370,108 @@ export type Database = {
         Row: {
           created_at: string;
           description: string;
+          height_cm: number | null;
           id: string;
           image_url: string | null;
+          length_cm: number | null;
           name: string;
           price: number;
           stock_quantity: number;
           updated_at: string;
+          weight_kg: number | null;
+          width_cm: number | null;
         };
         Insert: {
           created_at?: string;
           description?: string;
+          height_cm?: number | null;
           id?: string;
           image_url?: string | null;
+          length_cm?: number | null;
           name: string;
           price?: number;
           stock_quantity?: number;
           updated_at?: string;
+          weight_kg?: number | null;
+          width_cm?: number | null;
         };
         Update: {
           created_at?: string;
           description?: string;
+          height_cm?: number | null;
           id?: string;
           image_url?: string | null;
+          length_cm?: number | null;
           name?: string;
           price?: number;
           stock_quantity?: number;
           updated_at?: string;
+          weight_kg?: number | null;
+          width_cm?: number | null;
         };
         Relationships: [];
+      };
+      shipping_provider_tokens: {
+        Row: {
+          access_token: string;
+          expires_at: string | null;
+          provider: string;
+          refresh_token: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          access_token: string;
+          expires_at?: string | null;
+          provider: string;
+          refresh_token?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          access_token?: string;
+          expires_at?: string | null;
+          provider?: string;
+          refresh_token?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      shipping_quotes: {
+        Row: {
+          cart_fingerprint: string;
+          created_at: string;
+          destination_postal_code: string;
+          expires_at: string;
+          id: string;
+          options: Json;
+          user_id: string;
+        };
+        Insert: {
+          cart_fingerprint: string;
+          created_at?: string;
+          destination_postal_code: string;
+          expires_at?: string;
+          id?: string;
+          options?: Json;
+          user_id: string;
+        };
+        Update: {
+          cart_fingerprint?: string;
+          created_at?: string;
+          destination_postal_code?: string;
+          expires_at?: string;
+          id?: string;
+          options?: Json;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "shipping_quotes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       user_roles: {
         Row: {

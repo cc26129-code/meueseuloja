@@ -9,7 +9,7 @@ type DbProduct = { id: string; name: string; price: number; stock_quantity: numb
 export function buildOrderItems(
   requested: { id: string; qty: number }[],
   products: DbProduct[],
-): { items: OrderItem[]; total: number } {
+): { items: OrderItem[]; subtotal: number; subtotalCents: number } {
   const byId = new Map(products.map((p) => [p.id, p]));
   const merged = new Map<string, number>();
   for (const item of requested) {
@@ -25,8 +25,9 @@ export function buildOrderItems(
         `Quantidade indisponível para ${product.name}. Disponível agora: ${product.stock_quantity}.`,
       );
     }
-    const unitPrice = Number(product.price);
-    const subtotal = Math.round(unitPrice * qty * 100) / 100;
+    const unitPriceCents = toCents(product.price);
+    const unitPrice = fromCents(unitPriceCents);
+    const subtotal = fromCents(unitPriceCents * qty);
     items.push({
       product_id: product.id,
       name: product.name,
@@ -38,10 +39,21 @@ export function buildOrderItems(
 
   if (items.length === 0) throw new Error("Carrinho vazio.");
 
-  const total = Math.round(items.reduce((sum, i) => sum + i.subtotal, 0) * 100) / 100;
-  if (total <= 0) throw new Error("Valor do pedido inválido.");
+  const subtotalCents = items.reduce((sum, item) => sum + toCents(item.subtotal), 0);
+  if (subtotalCents <= 0) throw new Error("Valor do pedido inválido.");
 
-  return { items, total };
+  return { items, subtotal: fromCents(subtotalCents), subtotalCents };
+}
+
+export function toCents(value: number) {
+  const cents = Math.round(Number(value) * 100);
+  if (!Number.isSafeInteger(cents) || cents < 0) throw new Error("Valor financeiro inválido.");
+  return cents;
+}
+
+export function fromCents(cents: number) {
+  if (!Number.isSafeInteger(cents) || cents < 0) throw new Error("Valor financeiro inválido.");
+  return cents / 100;
 }
 
 export function resolveSiteOrigin(requestUrl: string): string {
