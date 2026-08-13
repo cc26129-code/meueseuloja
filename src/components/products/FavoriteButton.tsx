@@ -1,11 +1,12 @@
 import { Heart } from "lucide-react";
 
-import { useFavorites } from "@/lib/favorites";
+import { cn } from "@/lib/utils";
+import { useFavorites } from "@/providers/favorites-provider";
 
 export function FavoriteButton({
   id,
   name,
-  className = "",
+  className,
 }: {
   id: string;
   name: string;
@@ -24,12 +25,16 @@ export function FavoriteButton({
         e.stopPropagation();
         toggle(id);
       }}
-      className={`grid size-9 place-items-center rounded-full border border-border/70 bg-background/70 backdrop-blur transition-all duration-300 hover:border-primary/60 hover:bg-background/90 ${className}`}
+      className={cn(
+        "grid size-9 place-items-center rounded-full border border-border/70 bg-background/70 backdrop-blur transition-all duration-300 hover:border-primary/60 hover:bg-background/90",
+        className,
+      )}
     >
       <Heart
-        className={`size-4 transition-colors duration-300 ${
-          active ? "fill-primary text-primary" : "text-muted-foreground"
-        }`}
+        className={cn(
+          "size-4 transition-colors duration-300",
+          active ? "fill-primary text-primary" : "text-muted-foreground",
+        )}
       />
     </button>
   );
