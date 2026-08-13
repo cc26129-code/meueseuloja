@@ -163,6 +163,7 @@ export function ProductShowcase() {
                 ))}
           </div>
         </div>
+        </div>
 
         {snaps.length > 1 ? (
           <div className="mt-6 flex justify-center gap-2">
