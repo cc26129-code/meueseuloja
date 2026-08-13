@@ -34,6 +34,8 @@ Use `.env.example` como referência. Nunca exponha `SUPABASE_SERVICE_ROLE_KEY`, 
 
 No Supabase Auth, configure as URLs permitidas do site em Authentication > URL Configuration. Se a confirmação de e-mail estiver ativada, o usuário precisará confirmar o endereço antes do primeiro login.
 
+Migration preparada para implantação.
+
 ## Verificações realizadas
 
 - `npx tsc --noEmit`
