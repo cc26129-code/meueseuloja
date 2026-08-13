@@ -79,8 +79,8 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
 }
 
 export function ProductShowcase() {
-  const { data, isLoading } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const products = (data ?? []) as ProductWithUrl[];
+  const { products, isLoading } = useProducts();
+
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: false });
   const [selected, setSelected] = useState(0);
