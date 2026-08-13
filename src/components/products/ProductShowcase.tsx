@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Check, Circle, Sparkles } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCart } from "@/lib/cart";
-import { FavoriteButton } from "@/components/site/FavoriteButton";
-import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
+import { FavoriteButton } from "@/components/products/FavoriteButton";
+import { ProductImage } from "@/components/products/ProductImage";
+import { StockBadge } from "@/components/products/StockBadge";
+import { useProducts } from "@/hooks/use-products";
+import { formatBRL } from "@/lib/format";
+import { useCart } from "@/providers/cart-provider";
+import type { ProductWithUrl } from "@/types/product";
+
 
 const AUTOPLAY_MS = 3800;
 
