@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 import heroImage from "@/assets/hero.jpg";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
-import { ProductShowcase } from "@/components/site/ProductShowcase";
-import { ProductCard } from "@/components/site/ProductCard";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { ProductShowcase } from "@/components/products/ProductShowcase";
+import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchProducts, type ProductWithUrl } from "@/lib/products";
+import { fetchProducts } from "@/services/products";
+import type { ProductWithUrl } from "@/types/product";
 
 export const Route = createFileRoute("/")({
   head: () => ({

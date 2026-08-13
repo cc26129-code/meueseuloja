@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Heart } from "lucide-react";
 
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
-import { ProductCard } from "@/components/site/ProductCard";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useFavorites } from "@/lib/favorites";
-import { fetchProducts, type ProductWithUrl } from "@/lib/products";
+import { useFavorites } from "@/providers/favorites-provider";
+import { fetchProducts } from "@/services/products";
+import type { ProductWithUrl } from "@/types/product";
 
 export const Route = createFileRoute("/favoritos")({
   head: () => ({

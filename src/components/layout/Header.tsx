@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useCart } from "@/lib/cart";
-import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { useCart } from "@/providers/cart-provider";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const links = [
   { label: "Início", href: "/#topo" },

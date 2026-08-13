@@ -8,9 +8,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCart } from "@/lib/cart";
+import { useCart } from "@/providers/cart-provider";
 import { createPixOrder } from "@/lib/checkout.functions";
-import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
+import { fetchProducts } from "@/services/products";
+import { formatBRL } from "@/lib/format";
+import type { ProductWithUrl } from "@/types/product";
 
 export const Route = createFileRoute("/checkout")({
   ssr: false,
