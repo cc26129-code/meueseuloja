@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { readJSON, writeJSON } from "@/lib/storage";
+
 export type CartItem = { id: string; qty: number };
 
 const STORAGE_KEY = "meueseuloja:cart:v1";
@@ -18,18 +20,11 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function read(): CartItem[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((i) => i && typeof i.id === "string" && Number.isFinite(Number(i.qty)))
-      .map((i) => ({ id: i.id as string, qty: Math.max(1, Math.floor(Number(i.qty))) }));
-  } catch {
-    return [];
-  }
+function parseItems(raw: unknown): CartItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((i) => i && typeof i.id === "string" && Number.isFinite(Number(i.qty)))
+    .map((i) => ({ id: i.id as string, qty: Math.max(1, Math.floor(Number(i.qty))) }));
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -38,35 +33,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setItems(read());
+    setItems(parseItems(readJSON(STORAGE_KEY)));
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-      /* ignore quota errors */
-    }
+    writeJSON(STORAGE_KEY, items);
   }, [items, hydrated]);
 
-  const value = useMemo<CartContextValue>(() => {
-    const qtyOf = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
-    return {
+  const value = useMemo<CartContextValue>(
+    () => ({
       items,
       open,
       setOpen,
       count: items.reduce((sum, i) => sum + i.qty, 0),
-      qtyOf,
+      qtyOf: (id) => items.find((i) => i.id === id)?.qty ?? 0,
       add: (id, qty) =>
-        setItems((prev) => {
-          const existing = prev.find((i) => i.id === id);
-          if (existing) {
-            return prev.map((i) => (i.id === id ? { ...i, qty: i.qty + qty } : i));
-          }
-          return [...prev, { id, qty }];
-        }),
+        setItems((prev) =>
+          prev.some((i) => i.id === id)
+            ? prev.map((i) => (i.id === id ? { ...i, qty: i.qty + qty } : i))
+            : [...prev, { id, qty }],
+        ),
       setQty: (id, qty) =>
         setItems((prev) =>
           qty <= 0
@@ -75,8 +63,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ),
       remove: (id) => setItems((prev) => prev.filter((i) => i.id !== id)),
       clear: () => setItems([]),
-    };
-  }, [items, open]);
+    }),
+    [items, open],
+  );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
