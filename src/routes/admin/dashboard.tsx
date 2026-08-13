@@ -27,14 +27,11 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  fetchProducts,
-  formatBRL,
-  stockStatus,
-  stockStatusLabel,
-  uploadProductImage,
-  type ProductWithUrl,
-} from "@/lib/products";
+import { formatBRL } from "@/lib/format";
+import { stockStatus, stockStatusLabel } from "@/lib/stock";
+import { fetchProducts, uploadProductImage } from "@/services/products";
+import type { ProductWithUrl } from "@/types/product";
+
 
 export const Route = createFileRoute("/admin/dashboard")({
   ssr: false,
