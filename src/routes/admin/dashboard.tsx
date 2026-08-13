@@ -27,9 +27,17 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { useProducts } from "@/hooks/use-products";
 import { formatBRL } from "@/lib/format";
 import { stockStatus, stockStatusLabel } from "@/lib/stock";
-import { fetchProducts, uploadProductImage } from "@/services/products";
+import {
+  createProduct,
+  deleteProduct,
+  fetchProducts,
+  updateProduct,
+  updateProductStock,
+  uploadProductImage,
+} from "@/services/products";
 import type { ProductWithUrl } from "@/types/product";
 
 
@@ -100,20 +108,13 @@ function Dashboard() {
   const [stockEditId, setStockEditId] = useState<string | null>(null);
   const [stockValue, setStockValue] = useState("0");
 
-  const { data, isLoading } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const allProducts = (data ?? []) as ProductWithUrl[];
+  const { products: allProducts, isLoading } = useProducts();
   const products = allProducts.filter(
     (p) => filter === "all" || stockStatus(Number(p.stock_quantity ?? 0)) === filter,
   );
 
   const saveStock = useMutation({
-    mutationFn: async ({ id, stock }: { id: string; stock: number }) => {
-      const { error } = await supabase
-        .from("products")
-        .update({ stock_quantity: stock })
-        .eq("id", id);
-      if (error) throw error;
-    },
+    mutationFn: ({ id, stock }: { id: string; stock: number }) => updateProductStock(id, stock),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Estoque atualizado.");
@@ -136,13 +137,8 @@ function Dashboard() {
         image_url: imagePath,
       };
 
-      if (state.id) {
-        const { error } = await supabase.from("products").update(payload).eq("id", state.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("products").insert(payload);
-        if (error) throw error;
-      }
+      if (state.id) await updateProduct(state.id, payload);
+      else await createProduct(payload);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -154,13 +150,7 @@ function Dashboard() {
   });
 
   const remove = useMutation({
-    mutationFn: async (product: ProductWithUrl) => {
-      const { error } = await supabase.from("products").delete().eq("id", product.id);
-      if (error) throw error;
-      if (product.image_url) {
-        await supabase.storage.from("product-images").remove([product.image_url]);
-      }
-    },
+    mutationFn: (product: ProductWithUrl) => deleteProduct(product),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Produto excluído.");

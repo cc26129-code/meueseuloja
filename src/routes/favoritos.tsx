@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { Heart } from "lucide-react";
 
 import { Header } from "@/components/layout/Header";
@@ -8,8 +7,7 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFavorites } from "@/providers/favorites-provider";
-import { fetchProducts } from "@/services/products";
-import type { ProductWithUrl } from "@/types/product";
+import { useProducts } from "@/hooks/use-products";
 
 export const Route = createFileRoute("/favoritos")({
   head: () => ({
@@ -33,10 +31,10 @@ export const Route = createFileRoute("/favoritos")({
 });
 
 function Favoritos() {
-  const { data, isLoading } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
+  const { products: allProducts, isLoading } = useProducts();
   const { ids } = useFavorites();
 
-  const products = ((data ?? []) as ProductWithUrl[]).filter((p) => ids.includes(p.id));
+  const products = allProducts.filter((p) => ids.includes(p.id));
 
   return (
     <div className="min-h-screen bg-background">
