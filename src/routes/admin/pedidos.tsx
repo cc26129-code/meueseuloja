@@ -1,16 +1,29 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Bell, LogOut, Package, Store } from "lucide-react";
+import { Bell, ChevronDown, ChevronUp, LogOut, Package, Store } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { orderNumber, paymentStatusLabel, type OrderItem, type PaymentStatus } from "@/lib/orders";
 import { formatBRL } from "@/lib/format";
+import { updateOrderStatus } from "@/lib/admin-orders.functions";
+import { orderStatusLabel, type OrderStatus } from "@/types/account";
 
 export const Route = createFileRoute("/admin/pedidos")({
   ssr: false,
+  beforeLoad: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/admin", search: { next: "/admin/pedidos" } });
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: data.user.id,
+      _role: "admin",
+    });
+    if (!isAdmin) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Pedidos e pagamentos | meueseuloja" },
@@ -45,11 +58,19 @@ function OrdersPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<"all" | PaymentStatus>("all");
   const [checked, setChecked] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const changeStatus = useServerFn(updateOrderStatus);
 
   useEffect(() => {
     void supabase.auth.getUser().then(({ data }) => {
       if (!data.user) navigate({ to: "/admin", replace: true });
-      else setChecked(true);
+      else
+        void supabase
+          .rpc("has_role", { _user_id: data.user.id, _role: "admin" })
+          .then(({ data: isAdmin }) => {
+            if (!isAdmin) navigate({ to: "/", replace: true });
+            else setChecked(true);
+          });
     });
   }, [navigate]);
 
@@ -98,6 +119,16 @@ function OrdersPage() {
     queryClient.clear();
     await supabase.auth.signOut();
     navigate({ to: "/admin", replace: true });
+  }
+
+  async function setOrderStatus(orderId: string, status: OrderStatus) {
+    try {
+      await changeStatus({ data: { orderId, status } });
+      await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      toast.success("Status do pedido atualizado.");
+    } catch {
+      toast.error("Não foi possível atualizar o status.");
+    }
   }
 
   const list = (orders ?? []).filter((o) => filter === "all" || o.payment_status === filter);
@@ -232,9 +263,63 @@ function OrdersPage() {
                     ))}
                   </div>
 
-                  <p className="mt-3 text-xs text-muted-foreground">
-                    Transação: {order.gateway_payment_id ?? "-"} | PIX
-                  </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                    <select
+                      value={order.order_status}
+                      onChange={(event) =>
+                        void setOrderStatus(order.id, event.target.value as OrderStatus)
+                      }
+                      aria-label="Status do pedido"
+                      className="rounded-xl border border-border bg-background px-3 py-2 text-sm"
+                    >
+                      {Object.entries(orderStatusLabel).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => setExpanded(expanded === order.id ? null : order.id)}
+                    >
+                      {expanded === order.id ? (
+                        <ChevronUp className="mr-2 size-4" />
+                      ) : (
+                        <ChevronDown className="mr-2 size-4" />
+                      )}
+                      {expanded === order.id ? "Ocultar detalhes" : "Ver detalhes"}
+                    </Button>
+                  </div>
+                  {expanded === order.id && (
+                    <div className="mt-4 grid gap-4 rounded-xl bg-background/60 p-4 text-sm sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs uppercase tracking-widest text-primary">Cliente</p>
+                        <p className="mt-2">{order.customer_name}</p>
+                        <p className="text-muted-foreground">
+                          {order.customer_email ?? "E-mail não registrado"}
+                        </p>
+                        <p className="mt-1 break-all text-xs text-muted-foreground">
+                          Usuário: {order.user_id ?? "Pedido antigo/visitante"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-widest text-primary">
+                          Entrega e pagamento
+                        </p>
+                        <p className="mt-2 whitespace-pre-wrap">
+                          {order.shipping_address || "Endereço não informado"}
+                        </p>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Transação: {order.gateway_payment_id ?? "-"} | PIX
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Status: {orderStatusLabel[order.order_status]}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })

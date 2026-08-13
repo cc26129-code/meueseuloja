@@ -58,8 +58,8 @@ function Home() {
               Peças que carregam <span className="text-gold-gradient">presença</span>
             </h1>
             <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Na meueseuloja cada produto é escolhido a dedo: materiais nobres, acabamento
-              impecável e uma vitrine feita para quem aprecia o detalhe.
+              Na meueseuloja cada produto é escolhido a dedo: materiais nobres, acabamento impecável
+              e uma vitrine feita para quem aprecia o detalhe.
             </p>
             <div className="mt-12 flex flex-wrap gap-4">
               <Button asChild size="lg" className="rounded-full px-10 tracking-widest">

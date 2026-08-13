@@ -35,8 +35,13 @@ function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
+      const { data: isAdmin } = await supabase.rpc("has_role", {
+        _user_id: data.session.user.id,
+        _role: "admin",
+      });
+      if (!isAdmin) return;
       if (next) window.location.replace(next);
       else navigate({ to: "/admin/dashboard", replace: true });
     });

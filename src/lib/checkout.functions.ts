@@ -1,12 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 import type { PublicOrder } from "./orders";
 
 const checkoutSchema = z.object({
   customer_name: z.string().trim().min(2).max(80),
   customer_contact: z.string().trim().min(8).max(40),
+  shipping_address: z.string().trim().max(500).optional(),
   items: z
     .array(
       z.object({
@@ -19,13 +21,20 @@ const checkoutSchema = z.object({
 });
 
 export const createPixOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => checkoutSchema.parse(data))
-  .handler(async ({ data }): Promise<PublicOrder> => {
+  .handler(async ({ data, context }): Promise<PublicOrder> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { createPixPayment } = await import("./mercadopago.server");
     const { buildOrderItems, resolveSiteOrigin } = await import("./checkout.server");
 
     const ids = [...new Set(data.items.map((i) => i.id))];
+    const { data: customer } = await supabaseAdmin
+      .from("profiles")
+      .select("email")
+      .eq("id", context.userId)
+      .single();
+    if (!customer) throw new Error("Conta de usuário não encontrada.");
     const { data: products, error } = await supabaseAdmin
       .from("products")
       .select("id, name, price, stock_quantity")
@@ -42,6 +51,9 @@ export const createPixOrder = createServerFn({ method: "POST" })
       .insert({
         customer_name: data.customer_name,
         customer_contact: data.customer_contact,
+        customer_email: customer.email,
+        shipping_address: data.shipping_address?.trim() || null,
+        user_id: context.userId,
         items: items as never,
         total_amount: total,
         payment_method: "pix",
@@ -51,6 +63,18 @@ export const createPixOrder = createServerFn({ method: "POST" })
       .single();
     if (insertError || !order) throw new Error("Não foi possível criar o pedido.");
 
+    const { error: itemError } = await supabaseAdmin.from("order_items").insert(
+      items.map((item) => ({
+        order_id: order.id,
+        product_id: item.product_id,
+        product_name: item.name,
+        unit_price: item.unit_price,
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+      })),
+    );
+    if (itemError) throw new Error("Não foi possível registrar os itens do pedido.");
+
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
     const payment = await createPixPayment({
       amount: total,
@@ -58,7 +82,7 @@ export const createPixOrder = createServerFn({ method: "POST" })
       externalReference: order.id,
       idempotencyKey: order.id,
       notificationUrl: `${origin}/api/public/webhooks/mercadopago`,
-      payerEmail: `pedido.${order.id.slice(0, 8)}@meueseuloja.app`,
+      payerEmail: customer.email,
       payerFirstName: data.customer_name.split(" ")[0] ?? "Cliente",
       expiresAt,
     });
@@ -77,6 +101,15 @@ export const createPixOrder = createServerFn({ method: "POST" })
       .single();
 
     const row = updated ?? order;
+    await supabaseAdmin.from("payments").insert({
+      order_id: order.id,
+      provider: "mercadopago",
+      provider_payment_id: String(payment.id),
+      method: "pix",
+      status: "pending",
+      amount: total,
+    });
+    await supabaseAdmin.from("cart_items").delete().eq("user_id", context.userId);
     return {
       id: row.id,
       total_amount: Number(row.total_amount),
@@ -92,14 +125,16 @@ export const createPixOrder = createServerFn({ method: "POST" })
   });
 
 export const getPublicOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
-  .handler(async ({ data }): Promise<PublicOrder | null> => {
+  .handler(async ({ data, context }): Promise<PublicOrder | null> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: order } = await supabaseAdmin
       .from("orders")
       .select("*")
       .eq("id", data.id)
+      .eq("user_id", context.userId)
       .maybeSingle();
     if (!order) return null;
 
@@ -112,6 +147,7 @@ export const getPublicOrder = createServerFn({ method: "POST" })
           .from("orders")
           .select("*")
           .eq("id", data.id)
+          .eq("user_id", context.userId)
           .maybeSingle();
         if (refreshed) Object.assign(order, refreshed);
       }

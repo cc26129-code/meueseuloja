@@ -1,0 +1,35 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const statusSchema = z.object({
+  orderId: z.string().uuid(),
+  status: z.enum([
+    "awaiting_payment",
+    "payment_approved",
+    "processing",
+    "shipped",
+    "delivered",
+    "cancelled",
+  ]),
+});
+
+export const updateOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((data: unknown) => statusSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Acesso não autorizado.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("orders")
+      .update({ order_status: data.status })
+      .eq("id", data.orderId);
+    if (error) throw new Error("Não foi possível atualizar o pedido.");
+    return { ok: true };
+  });

@@ -1,4 +1,3 @@
-
 This project was built with [Lovable](https://lovable.dev).
 
 **Live app**: https://meueseuloja.lovable.app

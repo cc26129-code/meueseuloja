@@ -39,7 +39,6 @@ import {
 } from "@/services/products";
 import type { ProductWithUrl } from "@/types/product";
 
-
 export const Route = createFileRoute("/admin/dashboard")({
   ssr: false,
   beforeLoad: async () => {
@@ -121,7 +120,6 @@ function Dashboard() {
     },
     onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar o estoque."),
   });
-
 
   const save = useMutation({
     mutationFn: async (state: FormState) => {
@@ -251,7 +249,8 @@ function Dashboard() {
           <div className="min-w-0">
             <h1 className="font-display text-4xl">Produtos</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {products.length} {products.length === 1 ? "produto cadastrado" : "produtos cadastrados"}
+              {products.length}{" "}
+              {products.length === 1 ? "produto cadastrado" : "produtos cadastrados"}
             </p>
           </div>
           <Button onClick={openNew} className="rounded-xl tracking-widest">
@@ -290,108 +289,110 @@ function Dashboard() {
               const status = stockStatus(qty);
               const editing = stockEditId === p.id;
               return (
-              <div
-                key={p.id}
-                className="grid gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:items-center"
-              >
-                <div className="aspect-4/3 overflow-hidden rounded-lg bg-secondary sm:aspect-square">
-                  {p.signedUrl ? (
-                    <img
-                      src={p.signedUrl}
-                      alt={p.name}
-                      loading="lazy"
-                      className="size-full object-cover"
-                    />
-                  ) : (
-                    <div className="grid size-full place-items-center text-muted-foreground">
-                      <ImagePlus className="size-5" />
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate font-display text-2xl">{p.name}</p>
-                  <p className="mt-1 text-sm text-primary">{formatBRL(Number(p.price))}</p>
-                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{p.description}</p>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span
-                      className={`rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.16em] ${
-                        status === "in_stock"
-                          ? "bg-primary/15 text-primary"
-                          : status === "low_stock"
-                            ? "bg-accent text-accent-foreground"
-                            : "bg-destructive/15 text-destructive"
-                      }`}
-                    >
-                      {stockStatusLabel[status]}
-                    </span>
-                    {editing ? (
-                      <span className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min={0}
-                          value={stockValue}
-                          onChange={(e) => setStockValue(e.target.value)}
-                          className="h-8 w-24 rounded-lg"
-                          aria-label="Quantidade em estoque"
-                        />
-                        <Button
-                          size="sm"
-                          className="rounded-full"
-                          disabled={saveStock.isPending}
-                          onClick={() =>
-                            saveStock.mutate({
-                              id: p.id,
-                              stock: Math.max(0, Math.floor(Number(stockValue || "0"))),
-                            })
-                          }
-                        >
-                          Salvar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="rounded-full"
-                          onClick={() => setStockEditId(null)}
-                        >
-                          Cancelar
-                        </Button>
-                      </span>
+                <div
+                  key={p.id}
+                  className="grid gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:items-center"
+                >
+                  <div className="aspect-4/3 overflow-hidden rounded-lg bg-secondary sm:aspect-square">
+                    {p.signedUrl ? (
+                      <img
+                        src={p.signedUrl}
+                        alt={p.name}
+                        loading="lazy"
+                        className="size-full object-cover"
+                      />
                     ) : (
-                      <button
-                        type="button"
-                        className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
-                        onClick={() => {
-                          setStockEditId(p.id);
-                          setStockValue(String(qty));
-                        }}
-                      >
-                        Estoque: {qty} (editar)
-                      </button>
+                      <div className="grid size-full place-items-center text-muted-foreground">
+                        <ImagePlus className="size-5" />
+                      </div>
                     )}
                   </div>
-                </div>
+                  <div className="min-w-0">
+                    <p className="truncate font-display text-2xl">{p.name}</p>
+                    <p className="mt-1 text-sm text-primary">{formatBRL(Number(p.price))}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                      {p.description}
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.16em] ${
+                          status === "in_stock"
+                            ? "bg-primary/15 text-primary"
+                            : status === "low_stock"
+                              ? "bg-accent text-accent-foreground"
+                              : "bg-destructive/15 text-destructive"
+                        }`}
+                      >
+                        {stockStatusLabel[status]}
+                      </span>
+                      {editing ? (
+                        <span className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min={0}
+                            value={stockValue}
+                            onChange={(e) => setStockValue(e.target.value)}
+                            className="h-8 w-24 rounded-lg"
+                            aria-label="Quantidade em estoque"
+                          />
+                          <Button
+                            size="sm"
+                            className="rounded-full"
+                            disabled={saveStock.isPending}
+                            onClick={() =>
+                              saveStock.mutate({
+                                id: p.id,
+                                stock: Math.max(0, Math.floor(Number(stockValue || "0"))),
+                              })
+                            }
+                          >
+                            Salvar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="rounded-full"
+                            onClick={() => setStockEditId(null)}
+                          >
+                            Cancelar
+                          </Button>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+                          onClick={() => {
+                            setStockEditId(p.id);
+                            setStockValue(String(qty));
+                          }}
+                        >
+                          Estoque: {qty} (editar)
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-xl"
-                    onClick={() => openEdit(p)}
-                  >
-                    <Pencil className="size-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Editar</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-xl text-destructive hover:text-destructive"
-                    onClick={() => setDeleting(p)}
-                  >
-                    <Trash2 className="size-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Excluir</span>
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl"
+                      onClick={() => openEdit(p)}
+                    >
+                      <Pencil className="size-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Editar</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl text-destructive hover:text-destructive"
+                      onClick={() => setDeleting(p)}
+                    >
+                      <Trash2 className="size-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Excluir</span>
+                    </Button>
+                  </div>
                 </div>
-              </div>
               );
             })
           )}
@@ -481,7 +482,6 @@ function Dashboard() {
 
             <div className="space-y-2">
               <Label htmlFor="description" className="text-xs uppercase tracking-widest">
-
                 Descrição
               </Label>
               <Textarea

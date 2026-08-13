@@ -52,7 +52,7 @@ export async function settlePaymentFromGateway(
     const paidAt = new Date().toISOString();
     const { data: updated } = await supabaseAdmin
       .from("orders")
-      .update({ payment_status: "paid", paid_at: paidAt })
+      .update({ payment_status: "paid", order_status: "payment_approved", paid_at: paidAt })
       .eq("id", order.id)
       .eq("payment_status", "pending")
       .select("id")
@@ -60,6 +60,12 @@ export async function settlePaymentFromGateway(
 
     // Another concurrent delivery already flipped it: do not notify twice.
     if (!updated) return { handled: false, reason: "already_paid" };
+
+    await supabaseAdmin
+      .from("payments")
+      .update({ status: "paid", paid_at: paidAt })
+      .eq("provider", "mercadopago")
+      .eq("provider_payment_id", String(payment.id));
 
     const paidOrder: PaidOrder = {
       id: order.id,
@@ -84,11 +90,20 @@ export async function settlePaymentFromGateway(
   }
 
   if (mapped !== "pending") {
+    const orderUpdate =
+      mapped === "cancelled" || mapped === "expired"
+        ? { payment_status: mapped, order_status: "cancelled" as const }
+        : { payment_status: mapped };
     await supabaseAdmin
       .from("orders")
-      .update({ payment_status: mapped })
+      .update(orderUpdate)
       .eq("id", order.id)
       .eq("payment_status", "pending");
+    await supabaseAdmin
+      .from("payments")
+      .update({ status: mapped })
+      .eq("provider", "mercadopago")
+      .eq("provider_payment_id", String(payment.id));
     return { handled: true, status: mapped };
   }
 

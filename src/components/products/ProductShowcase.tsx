@@ -13,7 +13,6 @@ import { formatBRL } from "@/lib/format";
 import { useCart } from "@/providers/cart-provider";
 import type { ProductWithUrl } from "@/types/product";
 
-
 const AUTOPLAY_MS = 3800;
 
 function ShowcaseCard({ product }: { product: ProductWithUrl }) {
@@ -55,12 +54,7 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
         />
       </button>
 
-
-      <FavoriteButton
-        id={product.id}
-        name={product.name}
-        className="absolute right-3 top-3 z-10"
-      />
+      <FavoriteButton id={product.id} name={product.name} className="absolute right-3 top-3 z-10" />
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="font-display text-xl leading-tight">{product.name}</h3>
@@ -80,7 +74,6 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
 
 export function ProductShowcase() {
   const { products, isLoading } = useProducts();
-
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: false });
   const [selected, setSelected] = useState(0);

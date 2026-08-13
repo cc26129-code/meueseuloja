@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/providers/cart-provider";
 import { FavoritesProvider } from "@/providers/favorites-provider";
 import { CartSheet } from "@/components/cart/CartSheet";
+import { AuthProvider } from "@/providers/auth-provider";
 
 function NotFoundComponent() {
   return (
@@ -118,7 +119,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -135,13 +136,15 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <FavoritesProvider>
-      <CartProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <CartSheet />
-      </CartProvider>
-      </FavoritesProvider>
+      <AuthProvider>
+        <FavoritesProvider>
+          <CartProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+            <CartSheet />
+          </CartProvider>
+        </FavoritesProvider>
+      </AuthProvider>
       <Toaster position="top-center" />
     </QueryClientProvider>
   );

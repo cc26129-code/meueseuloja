@@ -5,9 +5,7 @@
   "auth": {
     "type": "oauth",
     "issuer": "https://ymueqnizqanvaolhvfvk.supabase.co/auth/v1",
-    "accepted_audiences": [
-      "authenticated"
-    ]
+    "accepted_audiences": ["authenticated"]
   },
   "mcp": {
     "server": {
@@ -30,12 +28,7 @@
           "properties": {
             "stock_filter": {
               "type": "string",
-              "enum": [
-                "all",
-                "in_stock",
-                "low_stock",
-                "out_of_stock"
-              ],
+              "enum": ["all", "in_stock", "low_stock", "out_of_stock"],
               "default": "all",
               "description": "Filtro de estoque: todos, disponíveis, estoque baixo (1 a 5) ou esgotados."
             },
@@ -76,10 +69,7 @@
               "description": "Nova quantidade em estoque."
             }
           },
-          "required": [
-            "product_id",
-            "stock_quantity"
-          ],
+          "required": ["product_id", "stock_quantity"],
           "additionalProperties": false,
           "$schema": "http://json-schema.org/draft-07/schema#"
         },
@@ -99,14 +89,7 @@
           "properties": {
             "status": {
               "type": "string",
-              "enum": [
-                "all",
-                "pending",
-                "paid",
-                "failed",
-                "expired",
-                "cancelled"
-              ],
+              "enum": ["all", "pending", "paid", "failed", "expired", "cancelled"],
               "default": "all",
               "description": "Filtro por status do pagamento."
             },

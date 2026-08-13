@@ -117,11 +117,7 @@ export function CartSheet() {
               <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
               <span className="font-display text-3xl text-primary">{formatBRL(total)}</span>
             </div>
-            <Button
-              className="w-full rounded-full"
-              disabled={hasStockIssue}
-              onClick={goToCheckout}
-            >
+            <Button className="w-full rounded-full" disabled={hasStockIssue} onClick={goToCheckout}>
               Finalizar e pagar com PIX
             </Button>
             <Button variant="ghost" className="w-full rounded-full" onClick={clear}>

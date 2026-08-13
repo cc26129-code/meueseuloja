@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getPublicOrder } from "@/lib/checkout.functions";
 import { orderNumber, paymentStatusLabel } from "@/lib/orders";
 import { formatBRL } from "@/lib/format";
+import { useAuth } from "@/providers/auth-provider";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pedido/$id")({
   ssr: false,
@@ -48,15 +50,22 @@ function useCountdown(expiresAt: string | null) {
 }
 
 function OrderPage() {
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const { id } = Route.useParams();
   const fetchOrder = useServerFn(getPublicOrder);
 
   const { data: order, isLoading } = useQuery({
     queryKey: ["order", id],
     queryFn: () => fetchOrder({ data: { id } }),
-    refetchInterval: (query) =>
-      query.state.data?.payment_status === "pending" ? 5000 : false,
+    enabled: Boolean(user),
+    refetchInterval: (query) => (query.state.data?.payment_status === "pending" ? 5000 : false),
   });
+
+  useEffect(() => {
+    if (!authLoading && !user)
+      void navigate({ to: "/entrar", search: { next: `/pedido/${id}` }, replace: true });
+  }, [authLoading, id, navigate, user]);
 
   const countdown = useCountdown(order?.expires_at ?? null);
 

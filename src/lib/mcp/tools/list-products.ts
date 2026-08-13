@@ -27,7 +27,8 @@ export default defineTool({
       .limit(limit);
 
     if (stock_filter === "in_stock") query = query.gt("stock_quantity", 5);
-    if (stock_filter === "low_stock") query = query.gte("stock_quantity", 1).lte("stock_quantity", 5);
+    if (stock_filter === "low_stock")
+      query = query.gte("stock_quantity", 1).lte("stock_quantity", 5);
     if (stock_filter === "out_of_stock") query = query.eq("stock_quantity", 0);
 
     const { data, error } = await query;

@@ -44,8 +44,8 @@ function Favoritos() {
         <p className="text-[0.65rem] uppercase tracking-luxe text-primary">Seleção pessoal</p>
         <h1 className="mt-5 font-display text-4xl sm:text-5xl">Favoritos</h1>
         <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Os produtos que você marcou com o coração ficam guardados aqui, mesmo depois de fechar o
-          navegador.
+          Os produtos que você marcou com o coração ficam guardados aqui. Ao entrar na sua conta,
+          eles também são sincronizados entre seus dispositivos.
         </p>
 
         <div className="mt-14">

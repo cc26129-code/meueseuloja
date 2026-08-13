@@ -17,3 +17,12 @@ export function writeJSON(key: string, value: unknown) {
     /* ignora erros de cota/privacidade */
   }
 }
+
+export function removeJSON(key: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    /* ignora erros de privacidade */
+  }
+}

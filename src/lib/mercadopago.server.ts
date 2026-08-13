@@ -122,7 +122,7 @@ export function mapPaymentStatus(
 ): "pending" | "paid" | "failed" | "expired" | "cancelled" | null {
   switch (status) {
     case "approved":
-case "authorized":
+    case "authorized":
       return "paid";
     case "pending":
     case "in_process":

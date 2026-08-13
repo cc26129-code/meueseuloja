@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2, QrCode, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -11,6 +11,8 @@ import { useCart } from "@/providers/cart-provider";
 import { createPixOrder } from "@/lib/checkout.functions";
 import { useCartLines } from "@/hooks/use-cart-lines";
 import { formatBRL } from "@/lib/format";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/providers/auth-provider";
 
 export const Route = createFileRoute("/checkout")({
   ssr: false,
@@ -36,13 +38,26 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const navigate = useNavigate();
+  const { user, profile, loading: authLoading } = useAuth();
   const { items, clear } = useCart();
   const createOrder = useServerFn(createPixOrder);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { lines, total } = useCartLines();
+
+  useEffect(() => {
+    if (!authLoading && !user)
+      void navigate({ to: "/entrar", search: { next: "/checkout" }, replace: true });
+  }, [authLoading, navigate, user]);
+
+  useEffect(() => {
+    if (!profile) return;
+    setName((current) => current || profile.full_name);
+    setAddress((current) => current || profile.address);
+  }, [profile]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,6 +81,7 @@ function CheckoutPage() {
         data: {
           customer_name: name.trim(),
           customer_contact: contact.trim(),
+          shipping_address: address.trim() || undefined,
           items: lines.map((l) => ({ id: l.product.id, qty: l.item.qty })),
         },
       });
@@ -118,6 +134,20 @@ function CheckoutPage() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="address" className="text-xs uppercase tracking-widest">
+                Endereço para entrega
+              </Label>
+              <Textarea
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                maxLength={500}
+                autoComplete="street-address"
+                placeholder="Opcional; confirme se o pedido precisar de entrega"
+                className="min-h-24 rounded-xl"
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="contact" className="text-xs uppercase tracking-widest">
                 WhatsApp com DDD
               </Label>
@@ -136,7 +166,7 @@ function CheckoutPage() {
 
             <Button
               type="submit"
-              disabled={loading || lines.length === 0}
+              disabled={loading || authLoading || !user || lines.length === 0}
               className="w-full rounded-full tracking-widest"
             >
               {loading ? (
