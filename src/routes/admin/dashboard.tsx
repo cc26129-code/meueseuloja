@@ -241,6 +241,12 @@ function Dashboard() {
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <Button asChild variant="ghost" size="sm" className="rounded-xl">
+              <Link to="/admin/pedidos">
+                <Receipt className="size-4 sm:mr-2" />
+                <span className="hidden sm:inline">Pedidos</span>
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="rounded-xl">
               <Link to="/">
                 <Store className="size-4 sm:mr-2" />
                 <span className="hidden sm:inline">Ver loja</span>
