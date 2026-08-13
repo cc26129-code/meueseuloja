@@ -30,7 +30,7 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
   }
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-linear-to-b from-card to-secondary/40 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-linear-to-b from-card to-secondary/40 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
       <button
         type="button"
         onClick={() => {
@@ -126,12 +126,12 @@ export function ProductShowcase() {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="relative">
+      <div className="relative mx-auto w-full max-w-7xl px-14 sm:px-16">
         <Button
           type="button"
           variant="outline"
           size="icon"
-          className="absolute left-2 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full lg:left-4"
+          className="absolute left-3 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full border-border bg-background/90 shadow-sm backdrop-blur sm:left-4"
           aria-label="Produto anterior"
           onClick={() => emblaApi?.scrollPrev()}
         >
@@ -141,16 +141,16 @@ export function ProductShowcase() {
           type="button"
           variant="outline"
           size="icon"
-          className="absolute right-2 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full lg:right-4"
+          className="absolute right-3 top-1/2 z-[60] size-10 -translate-y-1/2 rounded-full border-border bg-background/90 shadow-sm backdrop-blur sm:right-4"
           aria-label="Próximo produto"
           onClick={() => emblaApi?.scrollNext()}
         >
           <ChevronRight className="size-4" />
         </Button>
 
-        <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
-          <div className="-mx-5 overflow-hidden sm:-mx-8" ref={emblaRef}>
-            <div className="flex touch-pan-y gap-5 pl-12 pr-12 sm:pl-12 sm:pr-12 lg:pl-14 lg:pr-14">
+        <div>
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex touch-pan-y gap-5">
               {isLoading
                 ? [0, 1, 2, 3].map((i) => (
                     <div
