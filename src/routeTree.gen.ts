@@ -11,10 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminPedidosRouteImport } from './routes/admin/pedidos'
 import { Route as PedidoIdRouteImport } from './routes/pedido/$id'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicWebhooksMercadopagoRouteImport } from './routes/api/public/webhooks/mercadopago'
 
 const IndexRoute = IndexRouteImport.update({
@@ -27,6 +32,23 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -47,6 +69,17 @@ const PedidoIdRoute = PedidoIdRouteImport.update({
   path: '/pedido/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksMercadopagoRoute =
   ApiPublicWebhooksMercadopagoRouteImport.update({
     id: '/api/public/webhooks/mercadopago',
@@ -57,29 +90,44 @@ const ApiPublicWebhooksMercadopagoRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/mcp': typeof McpRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/pedido/$id': typeof PedidoIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/mcp': typeof McpRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/pedido/$id': typeof PedidoIdRoute
   '/admin': typeof AdminIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/mcp': typeof McpRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/pedido/$id': typeof PedidoIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRouteTypes {
@@ -87,38 +135,58 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/checkout'
+    | '/mcp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/dashboard'
     | '/admin/pedidos'
     | '/pedido/$id'
     | '/admin/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/webhooks/mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/checkout'
+    | '/mcp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/dashboard'
     | '/admin/pedidos'
     | '/pedido/$id'
     | '/admin'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/webhooks/mercadopago'
   id:
     | '__root__'
     | '/'
     | '/checkout'
+    | '/mcp'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/dashboard'
     | '/admin/pedidos'
     | '/pedido/$id'
     | '/admin/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/webhooks/mercadopago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
+  McpRoute: typeof McpRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   PedidoIdRoute: typeof PedidoIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicWebhooksMercadopagoRoute: typeof ApiPublicWebhooksMercadopagoRoute
 }
 
@@ -136,6 +204,27 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -166,6 +255,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PedidoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/mercadopago': {
       id: '/api/public/webhooks/mercadopago'
       path: '/api/public/webhooks/mercadopago'
@@ -179,10 +282,16 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
+  McpRoute: McpRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   PedidoIdRoute: PedidoIdRoute,
   AdminIndexRoute: AdminIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicWebhooksMercadopagoRoute: ApiPublicWebhooksMercadopagoRoute,
 }
 export const routeTree = rootRouteImport

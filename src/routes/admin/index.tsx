@@ -11,6 +11,9 @@ import { usernameToEmail } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s["next"] === "string" && s["next"].startsWith("/") ? s["next"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Acesso restrito | meueseuloja" },
@@ -25,15 +28,18 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin/dashboard", replace: true });
+      if (!data.session) return;
+      if (next) window.location.replace(next);
+      else navigate({ to: "/admin/dashboard", replace: true });
     });
-  }, [navigate]);
+  }, [navigate, next]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +58,10 @@ function AdminLogin() {
       return;
     }
     toast.success("Bem-vinda de volta!");
+    if (next) {
+      window.location.replace(next);
+      return;
+    }
     navigate({ to: "/admin/dashboard", replace: true });
   }
 
