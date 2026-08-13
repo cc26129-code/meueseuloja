@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart";
+import { FavoritesProvider } from "@/lib/favorites";
 import { CartSheet } from "@/components/site/CartSheet";
 
 function NotFoundComponent() {
@@ -134,11 +135,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <FavoritesProvider>
       <CartProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <CartSheet />
       </CartProvider>
+      </FavoritesProvider>
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
