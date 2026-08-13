@@ -52,6 +52,12 @@ export function Header() {
                 {l.label}
               </a>
             ))}
+            <Link
+              to="/favoritos"
+              className="relative text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-500 hover:text-primary hover:after:w-full"
+            >
+              Favoritos
+            </Link>
             <Button asChild variant="outline" size="sm" className="rounded-full">
               <Link to="/admin">Área do lojista</Link>
             </Button>
@@ -96,6 +102,13 @@ export function Header() {
                     {l.label}
                   </a>
                 ))}
+                <Link
+                  to="/favoritos"
+                  onClick={() => setOpen(false)}
+                  className="text-sm uppercase tracking-[0.22em] text-muted-foreground hover:text-primary"
+                >
+                  Favoritos
+                </Link>
                 <Button asChild variant="outline" className="rounded-full">
                   <Link to="/admin" onClick={() => setOpen(false)}>
                     Área do lojista

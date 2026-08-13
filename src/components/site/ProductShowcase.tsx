@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart";
+import { FavoriteButton } from "@/components/site/FavoriteButton";
 import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
 
 const AUTOPLAY_MS = 3800;
@@ -60,6 +61,12 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
           {available ? "Disponível" : "Esgotado"}
         </span>
       </button>
+
+      <FavoriteButton
+        id={product.id}
+        name={product.name}
+        className="absolute right-3 top-3 z-10"
+      />
 
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="font-display text-xl leading-tight">{product.name}</h3>
