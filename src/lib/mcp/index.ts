@@ -19,5 +19,8 @@ export default defineMcp({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [listProductsTool, updateStockTool, listOrdersTool, storeSummaryTool],
+  // Cast keeps exactOptionalPropertyTypes happy with the SDK tool type.
+  tools: [listProductsTool, updateStockTool, listOrdersTool, storeSummaryTool] as Parameters<
+    typeof defineMcp
+  >[0]["tools"],
 });
