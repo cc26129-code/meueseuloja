@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate, Link } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ImagePlus, Loader2, LogOut, Pencil, Plus, Receipt, Store, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -27,13 +27,12 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { useProducts } from "@/hooks/use-products";
+import { PRODUCTS_QUERY_KEY, useProducts } from "@/hooks/use-products";
 import { formatBRL } from "@/lib/format";
 import { stockStatus, stockStatusLabel } from "@/lib/stock";
 import {
   createProduct,
   deleteProduct,
-  fetchProducts,
   updateProduct,
   updateProductStock,
   uploadProductImage,
@@ -116,7 +115,7 @@ function Dashboard() {
   const saveStock = useMutation({
     mutationFn: ({ id, stock }: { id: string; stock: number }) => updateProductStock(id, stock),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      await queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
       toast.success("Estoque atualizado.");
       setStockEditId(null);
     },
@@ -141,7 +140,7 @@ function Dashboard() {
       else await createProduct(payload);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      await queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
       toast.success(form.id ? "Produto atualizado." : "Produto adicionado.");
       setOpen(false);
       setForm(emptyForm);
@@ -152,7 +151,7 @@ function Dashboard() {
   const remove = useMutation({
     mutationFn: (product: ProductWithUrl) => deleteProduct(product),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      await queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
       toast.success("Produto excluído.");
       setDeleting(null);
     },
