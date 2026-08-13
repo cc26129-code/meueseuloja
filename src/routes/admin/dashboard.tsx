@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useNavigate, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ImagePlus, Loader2, LogOut, Pencil, Plus, Store, Trash2 } from "lucide-react";
+import { ImagePlus, Loader2, LogOut, Pencil, Plus, Receipt, Store, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
