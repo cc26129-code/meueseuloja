@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Check, Circle, Sparkles } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCart } from "@/lib/cart";
-import { FavoriteButton } from "@/components/site/FavoriteButton";
-import { fetchProducts, formatBRL, type ProductWithUrl } from "@/lib/products";
+import { FavoriteButton } from "@/components/products/FavoriteButton";
+import { ProductImage } from "@/components/products/ProductImage";
+import { StockBadge } from "@/components/products/StockBadge";
+import { useProducts } from "@/hooks/use-products";
+import { formatBRL } from "@/lib/format";
+import { useCart } from "@/providers/cart-provider";
+import type { ProductWithUrl } from "@/types/product";
+
 
 const AUTOPLAY_MS = 3800;
 
@@ -40,27 +44,17 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
         aria-label={`Visualizar ${product.name}`}
         className="relative block aspect-4/3 w-full overflow-hidden bg-secondary"
       >
-        {product.signedUrl ? (
-          <img
-            src={product.signedUrl}
-            alt={product.name}
-            loading="lazy"
-            className="size-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
-          />
-        ) : (
-          <span className="grid size-full place-items-center text-muted-foreground">
-            <Sparkles className="size-7" />
-          </span>
-        )}
-        <span
-          className={`absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.6rem] uppercase tracking-[0.16em] backdrop-blur ${
-            available ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
-          }`}
-        >
-          {available ? <Check className="size-3" /> : <Circle className="size-3" />}
-          {available ? "Disponível" : "Esgotado"}
-        </span>
+        <ProductImage
+          product={product}
+          className="transition-transform duration-[900ms] ease-out group-hover:scale-105"
+          fallback={<Sparkles className="size-7" />}
+        />
+        <StockBadge
+          available={available}
+          className="absolute left-3 top-3 text-[0.6rem] tracking-[0.16em]"
+        />
       </button>
+
 
       <FavoriteButton
         id={product.id}
@@ -85,8 +79,8 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
 }
 
 export function ProductShowcase() {
-  const { data, isLoading } = useQuery({ queryKey: ["products"], queryFn: fetchProducts });
-  const products = (data ?? []) as ProductWithUrl[];
+  const { products, isLoading } = useProducts();
+
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: false });
   const [selected, setSelected] = useState(0);

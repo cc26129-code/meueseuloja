@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPublicOrder } from "@/lib/checkout.functions";
 import { orderNumber, paymentStatusLabel } from "@/lib/orders";
-import { formatBRL } from "@/lib/products";
+import { formatBRL } from "@/lib/format";
 
 export const Route = createFileRoute("/pedido/$id")({
   ssr: false,

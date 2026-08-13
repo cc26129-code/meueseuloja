@@ -1,11 +1,14 @@
-import { Check, Circle, Minus, Plus, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { FavoriteButton } from "@/components/products/FavoriteButton";
+import { ProductImage } from "@/components/products/ProductImage";
+import { QuantityStepper } from "@/components/products/QuantityStepper";
+import { StockBadge } from "@/components/products/StockBadge";
 import { Button } from "@/components/ui/button";
-import { FavoriteButton } from "@/components/site/FavoriteButton";
-import { useCart } from "@/lib/cart";
-import { formatBRL, type ProductWithUrl } from "@/lib/products";
+import { formatBRL, pluralize } from "@/lib/format";
+import { useCart } from "@/providers/cart-provider";
+import type { ProductWithUrl } from "@/types/product";
 
 export function ProductCard({ product }: { product: ProductWithUrl }) {
   const { add, setOpen, qtyOf } = useCart();
@@ -15,10 +18,12 @@ export function ProductCard({ product }: { product: ProductWithUrl }) {
   const remaining = Math.max(0, stock - inCart);
   const [qty, setQty] = useState(1);
 
+  const maxMessage = `Quantidade máxima disponível: ${stock} ${pluralize(stock, "unidade", "unidades")}.`;
+
   function changeQty(next: number) {
     if (next < 1) return;
     if (next > stock) {
-      toast.error(`Quantidade máxima disponível: ${stock} unidade${stock === 1 ? "" : "s"}.`);
+      toast.error(maxMessage);
       return;
     }
     setQty(next);
@@ -27,7 +32,7 @@ export function ProductCard({ product }: { product: ProductWithUrl }) {
   function addToCart() {
     if (!available) return;
     if (qty + inCart > stock) {
-      toast.error(`Quantidade máxima disponível: ${stock} unidade${stock === 1 ? "" : "s"}.`);
+      toast.error(maxMessage);
       return;
     }
     add(product.id, qty);
@@ -39,27 +44,15 @@ export function ProductCard({ product }: { product: ProductWithUrl }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-gold">
       <div className="relative aspect-4/3 overflow-hidden bg-secondary">
-        {product.signedUrl ? (
-          <img
-            src={product.signedUrl}
-            alt={product.name}
-            loading="lazy"
-            className="size-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
-          />
-        ) : (
-          <div className="grid size-full place-items-center text-muted-foreground">
-            <Sparkles className="size-8" />
-          </div>
-        )}
+        <ProductImage
+          product={product}
+          className="transition-transform duration-[900ms] ease-out group-hover:scale-105"
+        />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/70 to-transparent opacity-70" />
-        <span
-          className={`absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-[0.18em] backdrop-blur ${
-            available ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
-          }`}
-        >
-          {available ? <Check className="size-3" /> : <Circle className="size-3" />}
-          {available ? "Disponível" : "Esgotado"}
-        </span>
+        <StockBadge
+          available={available}
+          className="absolute left-4 top-4 text-[0.65rem] tracking-[0.18em]"
+        />
         <FavoriteButton id={product.id} name={product.name} className="absolute right-4 top-4" />
       </div>
 
@@ -75,33 +68,15 @@ export function ProductCard({ product }: { product: ProductWithUrl }) {
         {available ? (
           <>
             <p className="text-xs text-muted-foreground">
-              {stock} {stock === 1 ? "unidade disponível" : "unidades disponíveis"}
+              {stock} {pluralize(stock, "unidade disponível", "unidades disponíveis")}
               {inCart > 0 ? ` · ${inCart} no carrinho` : ""}
             </p>
             <div className="mt-2 flex items-center gap-3">
-              <div className="flex items-center gap-1 rounded-full border border-border p-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-full"
-                  aria-label="Diminuir quantidade"
-                  onClick={() => changeQty(qty - 1)}
-                >
-                  <Minus className="size-3.5" />
-                </Button>
-                <span className="w-7 text-center text-sm">{qty}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 rounded-full"
-                  aria-label="Aumentar quantidade"
-                  onClick={() => changeQty(qty + 1)}
-                >
-                  <Plus className="size-3.5" />
-                </Button>
-              </div>
+              <QuantityStepper
+                value={qty}
+                onDecrease={() => changeQty(qty - 1)}
+                onIncrease={() => changeQty(qty + 1)}
+              />
               <Button
                 className="flex-1 rounded-full tracking-widest"
                 onClick={addToCart}

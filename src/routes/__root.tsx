@@ -12,9 +12,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { CartProvider } from "@/lib/cart";
-import { FavoritesProvider } from "@/lib/favorites";
-import { CartSheet } from "@/components/site/CartSheet";
+import { CartProvider } from "@/providers/cart-provider";
+import { FavoritesProvider } from "@/providers/favorites-provider";
+import { CartSheet } from "@/components/cart/CartSheet";
 
 function NotFoundComponent() {
   return (

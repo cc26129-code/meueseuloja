@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 import heroImage from "@/assets/hero.jpg";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
-import { ProductShowcase } from "@/components/site/ProductShowcase";
-import { ProductCard } from "@/components/site/ProductCard";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { ProductShowcase } from "@/components/products/ProductShowcase";
+import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchProducts, type ProductWithUrl } from "@/lib/products";
+import { useProducts } from "@/hooks/use-products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,12 +32,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["products"],
-    queryFn: fetchProducts,
-  });
-
-  const products = (data ?? []) as ProductWithUrl[];
+  const { products, isLoading, isError } = useProducts();
 
   return (
     <div className="min-h-screen bg-background">

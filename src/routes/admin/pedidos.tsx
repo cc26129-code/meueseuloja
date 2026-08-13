@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { orderNumber, paymentStatusLabel, type OrderItem, type PaymentStatus } from "@/lib/orders";
-import { formatBRL } from "@/lib/products";
+import { formatBRL } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/pedidos")({
   ssr: false,
