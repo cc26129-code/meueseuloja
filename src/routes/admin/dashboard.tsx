@@ -526,7 +526,7 @@ function Dashboard() {
                       inputMode="decimal"
                       value={form[field as "weight" | "height" | "width" | "length"]}
                       onChange={(event) =>
-                        setForm((current) => ({ ...current, [field]: event.target.value }))
+                        setForm((current) => ({ ...current, [String(field)]: event.target.value }))
                       }
                       placeholder="0,00"
                       className="rounded-xl"

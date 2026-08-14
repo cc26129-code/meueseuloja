@@ -56,7 +56,7 @@ export const createPixOrder = createServerFn({ method: "POST" })
       ? (storedQuote.options as Array<Record<string, unknown>>)
       : [];
     const previousOption = previousOptions.find(
-      (option) => String(option.service_id) === data.shipping_service_id,
+      (option) => String(option["service_id"]) === data.shipping_service_id,
     );
     if (!previousOption) throw new Error("A opção de frete selecionada não é válida.");
 
@@ -71,7 +71,7 @@ export const createPixOrder = createServerFn({ method: "POST" })
     if (!selectedShipping) {
       throw new Error("O frete escolhido não está mais disponível. Calcule novamente.");
     }
-    if (toCents(selectedShipping.price) !== toCents(Number(previousOption.price))) {
+    if (toCents(selectedShipping.price) !== toCents(Number(previousOption["price"]))) {
       throw new Error("O valor do frete mudou. Calcule novamente antes de gerar o PIX.");
     }
 
