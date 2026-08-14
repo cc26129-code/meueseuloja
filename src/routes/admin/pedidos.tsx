@@ -13,17 +13,15 @@ import { orderNumber, paymentStatusLabel, type OrderItem, type PaymentStatus } f
 import { formatBRL } from "@/lib/format";
 import { updateOrderStatus, updateTrackingCode } from "@/lib/admin-orders.functions";
 import { orderStatusLabel, type OrderStatus } from "@/types/account";
+import { isAdmin } from "@/services/roles";
 
 export const Route = createFileRoute("/admin/pedidos")({
   ssr: false,
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/admin", search: { next: "/admin/pedidos" } });
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: data.user.id,
-      _role: "admin",
-    });
-    if (!isAdmin) throw redirect({ to: "/" });
+    const admin = await isAdmin(data.user.id);
+    if (!admin) throw redirect({ to: "/" });
   },
   head: () => ({
     meta: [
@@ -68,12 +66,10 @@ function OrdersPage() {
     void supabase.auth.getUser().then(({ data }) => {
       if (!data.user) navigate({ to: "/admin", replace: true });
       else
-        void supabase
-          .rpc("has_role", { _user_id: data.user.id, _role: "admin" })
-          .then(({ data: isAdmin }) => {
-            if (!isAdmin) navigate({ to: "/", replace: true });
-            else setChecked(true);
-          });
+        void isAdmin(data.user.id).then((admin) => {
+          if (!admin) navigate({ to: "/", replace: true });
+          else setChecked(true);
+        });
     });
   }, [navigate]);
 
