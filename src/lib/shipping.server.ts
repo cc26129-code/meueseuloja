@@ -186,18 +186,20 @@ function parseOptions(payload: unknown): ShippingOption[] {
   for (const raw of payload) {
     if (!raw || typeof raw !== "object") continue;
     const item = raw as Record<string, unknown>;
-    if (item.error) continue;
-    const price = positiveNumber(item.custom_price ?? item.price);
-    const deliveryDays = positiveNumber(item.custom_delivery_time ?? item.delivery_time);
+    if (item["error"]) continue;
+    const price = positiveNumber(item["custom_price"] ?? item["price"]);
+    const deliveryDays = positiveNumber(
+      item["custom_delivery_time"] ?? item["delivery_time"],
+    );
     const company =
-      item.company && typeof item.company === "object"
-        ? (item.company as Record<string, unknown>)
+      item["company"] && typeof item["company"] === "object"
+        ? (item["company"] as Record<string, unknown>)
         : {};
-    if (!price || !deliveryDays || item.id == null) continue;
+    if (!price || !deliveryDays || item["id"] == null) continue;
     options.push({
-      service_id: String(item.id),
-      carrier: String(company.name ?? "Transportadora"),
-      service: String(item.name ?? "Entrega"),
+      service_id: String(item["id"]),
+      carrier: String(company["name"] ?? "Transportadora"),
+      service: String(item["name"] ?? "Entrega"),
       price: Math.round(price * 100) / 100,
       delivery_days: Math.ceil(deliveryDays),
     });
