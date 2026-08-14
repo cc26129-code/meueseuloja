@@ -40,7 +40,7 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const navigate = useNavigate();
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, session, loading: authLoading } = useAuth();
   const { items, clear } = useCart();
   const createOrder = useServerFn(createPixOrder);
   const requestShipping = useServerFn(quoteShipping);
@@ -101,12 +101,25 @@ function CheckoutPage() {
     setQuote(null);
     setSelectedService("");
     try {
-      const result = await requestShipping({
-        data: {
-          postal_code: postalCode,
-          items: lines.map((line) => ({ id: line.product.id, qty: line.item.qty })),
-        },
-      });
+  if (!session?.access_token) {
+    throw new Error("Sua sessão expirou. Entre novamente.");
+  }
+
+  const result = await requestShipping({
+    data: {
+      postal_code: postalCode,
+      items: lines.map((line) => ({
+        id: line.product.id,
+        qty: line.item.qty,
+      })),
+    },
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+
+  setQuote(result);
+      
       setQuote(result);
     } catch (error) {
       setShippingError(
@@ -154,6 +167,27 @@ function CheckoutPage() {
           shipping_quote_id: quote.id,
           shipping_service_id: selectedOption.service_id,
           items: lines.map((l) => ({ id: l.product.id, qty: l.item.qty })),
+          if (!session?.access_token) {
+  throw new Error("Sua sessão expirou. Entre novamente.");
+}
+
+const order = await createOrder({
+  data: {
+    customer_name: name.trim(),
+    customer_contact: contact.trim(),
+    shipping_address: address.trim(),
+    postal_code: postalCode,
+    shipping_quote_id: quote.id,
+    shipping_service_id: selectedOption.service_id,
+    items: lines.map((line) => ({
+      id: line.product.id,
+      qty: line.item.qty,
+    })),
+  },
+  headers: {
+    Authorization: `Bearer ${session.access_token}`,
+  },
+});
         },
       });
       clear();
