@@ -101,25 +101,23 @@ function CheckoutPage() {
     setQuote(null);
     setSelectedService("");
     try {
-  if (!session?.access_token) {
-    throw new Error("Sua sessão expirou. Entre novamente.");
-  }
+      if (!session?.access_token) {
+        throw new Error("Sua sessão expirou. Entre novamente.");
+      }
 
-  const result = await requestShipping({
-    data: {
-      postal_code: postalCode,
-      items: lines.map((line) => ({
-        id: line.product.id,
-        qty: line.item.qty,
-      })),
-    },
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-    },
-  });
+      const result = await requestShipping({
+        data: {
+          postal_code: postalCode,
+          items: lines.map((line) => ({
+            id: line.product.id,
+            qty: line.item.qty,
+          })),
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
 
-  setQuote(result);
-      
       setQuote(result);
     } catch (error) {
       setShippingError(

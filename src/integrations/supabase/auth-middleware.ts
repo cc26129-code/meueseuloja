@@ -33,8 +33,17 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
-    const SUPABASE_URL = process.env["SUPABASE_URL"];
-    const SUPABASE_PUBLISHABLE_KEY = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    // Lovable Cloud injects credentials for its managed database at runtime.
+    // This storefront intentionally uses the external Supabase project selected
+    // by the Vite variables, so prefer those values when validating user JWTs.
+    const SUPABASE_URL =
+      import.meta.env["VITE_SUPABASE_URL"] ||
+      process.env["VITE_SUPABASE_URL"] ||
+      process.env["SUPABASE_URL"];
+    const SUPABASE_PUBLISHABLE_KEY =
+      import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+      process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+      process.env["SUPABASE_PUBLISHABLE_KEY"];
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [
