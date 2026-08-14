@@ -74,23 +74,49 @@ async function saveToken(token: StoredProviderToken) {
 async function refreshToken(refreshToken: string): Promise<StoredProviderToken> {
   const clientId = process.env["MELHOR_ENVIO_CLIENT_ID"];
   const clientSecret = process.env["MELHOR_ENVIO_CLIENT_SECRET"];
-  const redirectUri = process.env["MELHOR_ENVIO_REDIRECT_URI"];
-  if (!clientId || !clientSecret || !redirectUri) {
+  const userAgent = process.env["MELHOR_ENVIO_USER_AGENT"];
+  if (!clientId || !clientSecret || !userAgent) {
     throw new Error("A autenticação do Melhor Envio expirou e o OAuth não está configurado.");
   }
 
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    client_id: clientId,
+    client_secret: clientSecret,
+    refresh_token: refreshToken,
+  });
   const response = await fetch(`${getBaseUrl()}/oauth/token`, {
     method: "POST",
-    headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: JSON.stringify({
-      grant_type: "refresh_token",
-      client_id: clientId,
-      client_secret: clientSecret,
-      refresh_token: refreshToken,
-      redirect_uri: redirectUri,
-    }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": userAgent,
+    },
+    body: body.toString(),
   });
-  if (!response.ok) throw new Error("Não foi possível renovar o acesso ao Melhor Envio.");
+  if (!response.ok) {
+    let providerMessage = "";
+    try {
+      const errorPayload = (await response.json()) as {
+        error?: string;
+        message?: string;
+      };
+      providerMessage = errorPayload.message ?? errorPayload.error ?? "";
+    } catch {
+      // The provider may return an empty or non-JSON error body.
+    }
+    console.error("[Shipping] Melhor Envio token refresh failed", {
+      status: response.status,
+      providerMessage,
+      environment: process.env["MELHOR_ENVIO_ENVIRONMENT"] ?? "sandbox",
+    });
+    if (response.status === 400 || response.status === 401) {
+      throw new Error(
+        "Os tokens ou o aplicativo do Melhor Envio não pertencem ao ambiente configurado.",
+      );
+    }
+    throw new Error("Não foi possível renovar o acesso ao Melhor Envio.");
+  }
 
   const payload = (await response.json()) as {
     access_token?: string;
