@@ -39,9 +39,13 @@ function createSupabaseAdminClient() {
     import.meta.env["VITE_SUPABASE_URL"] ||
     process.env["VITE_SUPABASE_URL"] ||
     process.env["SUPABASE_URL"];
+  const rawExternalKey = process.env["EXTERNAL_SUPABASE_SERVICE_ROLE_KEY"]?.trim();
   const SUPABASE_SERVICE_ROLE_KEY =
-    process.env["EXTERNAL_SUPABASE_SERVICE_ROLE_KEY"] ||
-    process.env["SUPABASE_SERVICE_ROLE_KEY"];
+    rawExternalKey &&
+    ((rawExternalKey.startsWith('"') && rawExternalKey.endsWith('"')) ||
+      (rawExternalKey.startsWith("'") && rawExternalKey.endsWith("'")))
+      ? rawExternalKey.slice(1, -1).trim()
+      : rawExternalKey;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [

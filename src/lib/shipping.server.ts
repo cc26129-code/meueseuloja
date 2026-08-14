@@ -146,7 +146,33 @@ export async function resolveShippingCart(
       "id, name, price, stock_quantity, weight_kg, height_cm, width_cm, length_cm, updated_at",
     )
     .in("id", ids);
-  if (error) throw new Error("Não foi possível validar os produtos para calcular o frete.");
+  if (error) {
+    console.error("[Shipping] Product validation failed", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    const reason = `${error.code ?? ""} ${error.message ?? ""}`.toLowerCase();
+    if (
+      reason.includes("api key") ||
+      reason.includes("jwt") ||
+      reason.includes("unauthorized") ||
+      reason.includes("permission")
+    ) {
+      throw new Error(
+        "A chave administrativa do Supabase externo está ausente ou inválida no servidor.",
+      );
+    }
+    if (
+      reason.includes("schema cache") ||
+      reason.includes("column") ||
+      reason.includes("relation")
+    ) {
+      throw new Error("O banco do Supabase externo ainda não possui todos os campos do frete.");
+    }
+    throw new Error("Não foi possível validar os produtos para calcular o frete.");
+  }
 
   const products = (data ?? []) as ShippingProduct[];
   const byId = new Map(products.map((product) => [product.id, product]));
