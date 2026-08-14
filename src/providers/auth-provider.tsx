@@ -31,7 +31,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const AVATAR_BUCKET = "avatars";
 
 async function loadAccount(user: User): Promise<{ profile: Profile; isAdmin: boolean }> {
-  const [{ data: row, error }, { data: role }] = await Promise.all([
+  const [{ data: row, error }, role] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name, email, avatar_path")
@@ -39,6 +39,7 @@ async function loadAccount(user: User): Promise<{ profile: Profile; isAdmin: boo
       .single(),
     isAdmin(user.id),
   ]);
+
   if (error || !row) throw error ?? new Error("Perfil não encontrado.");
 
   const { data: address } = await supabase
