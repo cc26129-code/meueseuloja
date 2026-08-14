@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { usernameToEmail } from "@/lib/auth";
+import { isAdmin } from "@/services/roles";
 
 export const Route = createFileRoute("/admin/")({
   ssr: false,
@@ -37,11 +38,8 @@ function AdminLogin() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
-      const { data: isAdmin } = await supabase.rpc("has_role", {
-        _user_id: data.session.user.id,
-        _role: "admin",
-      });
-      if (!isAdmin) return;
+      const admin = await isAdmin(data.session.user.id);
+      if (!admin) return;
       if (next) window.location.replace(next);
       else navigate({ to: "/admin/dashboard", replace: true });
     });

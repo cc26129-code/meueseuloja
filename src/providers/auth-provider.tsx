@@ -11,6 +11,7 @@ import {
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Profile } from "@/types/account";
+import { isAdmin } from "@/services/roles";
 
 type SignUpInput = { fullName: string; email: string; password: string; address?: string };
 
@@ -36,7 +37,7 @@ async function loadAccount(user: User): Promise<{ profile: Profile; isAdmin: boo
       .select("id, full_name, email, avatar_path")
       .eq("id", user.id)
       .single(),
-    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }),
+    isAdmin(user.id),
   ]);
   if (error || !row) throw error ?? new Error("Perfil não encontrado.");
 

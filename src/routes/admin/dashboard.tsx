@@ -38,17 +38,15 @@ import {
   uploadProductImage,
 } from "@/services/products";
 import type { ProductWithUrl } from "@/types/product";
+import { isAdmin } from "@/services/roles";
 
 export const Route = createFileRoute("/admin/dashboard")({
   ssr: false,
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/admin" });
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: data.user.id,
-      _role: "admin",
-    });
-    if (!isAdmin) {
+    const admin = await isAdmin(data.user.id);
+    if (!admin) {
       await supabase.auth.signOut();
       throw redirect({ to: "/admin" });
     }
