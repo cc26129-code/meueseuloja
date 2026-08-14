@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          address_text: string
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string
+          postal_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_text: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          postal_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_text?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          postal_code?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "addresses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_notifications: {
         Row: {
           body: string
@@ -49,56 +90,245 @@ export type Database = {
           },
         ]
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          product_id: string
+          quantity: number
+          updated_at: string
+          user_id: string
+          variant: Json
+          variant_key: string
+        }
+        Insert: {
+          created_at?: string
+          product_id: string
+          quantity: number
+          updated_at?: string
+          user_id: string
+          variant?: Json
+          variant_key?: string
+        }
+        Update: {
+          created_at?: string
+          product_id?: string
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+          variant?: Json
+          variant_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          subtotal: number
+          unit_price: number
+          variant: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          subtotal: number
+          unit_price: number
+          variant?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          subtotal?: number
+          unit_price?: number
+          variant?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string
           customer_contact: string
+          customer_email: string | null
           customer_name: string
+          delivery_address: Json | null
+          delivery_postal_code: string | null
           expires_at: string | null
           gateway_payment_id: string | null
           gateway_qr_code: string | null
           gateway_qr_code_base64: string | null
           id: string
           items: Json
+          order_status: Database["public"]["Enums"]["order_status"]
           paid_at: string | null
           payment_method: string
           payment_status: Database["public"]["Enums"]["payment_status"]
+          shipping_address: string | null
+          shipping_amount: number
+          shipping_carrier: string | null
+          shipping_deadline: number | null
+          shipping_quote_id: string | null
+          shipping_quoted_at: string | null
+          shipping_service: string | null
+          shipping_service_id: string | null
+          subtotal: number
           total_amount: number
+          tracking_code: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           customer_contact: string
+          customer_email?: string | null
           customer_name: string
+          delivery_address?: Json | null
+          delivery_postal_code?: string | null
           expires_at?: string | null
           gateway_payment_id?: string | null
           gateway_qr_code?: string | null
           gateway_qr_code_base64?: string | null
           id?: string
           items?: Json
+          order_status?: Database["public"]["Enums"]["order_status"]
           paid_at?: string | null
           payment_method?: string
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          shipping_address?: string | null
+          shipping_amount?: number
+          shipping_carrier?: string | null
+          shipping_deadline?: number | null
+          shipping_quote_id?: string | null
+          shipping_quoted_at?: string | null
+          shipping_service?: string | null
+          shipping_service_id?: string | null
+          subtotal?: number
           total_amount?: number
+          tracking_code?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           customer_contact?: string
+          customer_email?: string | null
           customer_name?: string
+          delivery_address?: Json | null
+          delivery_postal_code?: string | null
           expires_at?: string | null
           gateway_payment_id?: string | null
           gateway_qr_code?: string | null
           gateway_qr_code_base64?: string | null
           id?: string
           items?: Json
+          order_status?: Database["public"]["Enums"]["order_status"]
           paid_at?: string | null
           payment_method?: string
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          shipping_address?: string | null
+          shipping_amount?: number
+          shipping_carrier?: string | null
+          shipping_deadline?: number | null
+          shipping_quote_id?: string | null
+          shipping_quoted_at?: string | null
+          shipping_service?: string | null
+          shipping_service_id?: string | null
+          subtotal?: number
           total_amount?: number
+          tracking_code?: string | null
           updated_at?: string
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_shipping_quote_id_fkey"
+            columns: ["shipping_quote_id"]
+            isOneToOne: false
+            referencedRelation: "shipping_quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_webhook_events: {
         Row: {
@@ -124,38 +354,186 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: string
+          order_id: string
+          paid_at: string | null
+          provider: string
+          provider_payment_id: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          method: string
+          order_id: string
+          paid_at?: string | null
+          provider: string
+          provider_payment_id?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          order_id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_payment_id?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           created_at: string
           description: string
+          height_cm: number | null
           id: string
           image_url: string | null
+          length_cm: number | null
           name: string
           price: number
           stock_quantity: number
           updated_at: string
+          weight_kg: number | null
+          width_cm: number | null
         }
         Insert: {
           created_at?: string
           description?: string
+          height_cm?: number | null
           id?: string
           image_url?: string | null
+          length_cm?: number | null
           name: string
           price?: number
           stock_quantity?: number
           updated_at?: string
+          weight_kg?: number | null
+          width_cm?: number | null
         }
         Update: {
           created_at?: string
           description?: string
+          height_cm?: number | null
           id?: string
           image_url?: string | null
+          length_cm?: number | null
           name?: string
           price?: number
           stock_quantity?: number
           updated_at?: string
+          weight_kg?: number | null
+          width_cm?: number | null
         }
         Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_path: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_path?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_path?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shipping_provider_tokens: {
+        Row: {
+          access_token: string
+          expires_at: string | null
+          provider: string
+          refresh_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          expires_at?: string | null
+          provider: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          expires_at?: string | null
+          provider?: string
+          refresh_token?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shipping_quotes: {
+        Row: {
+          cart_fingerprint: string
+          created_at: string
+          destination_postal_code: string
+          expires_at: string
+          id: string
+          options: Json
+          user_id: string
+        }
+        Insert: {
+          cart_fingerprint: string
+          created_at?: string
+          destination_postal_code: string
+          expires_at?: string
+          id?: string
+          options?: Json
+          user_id: string
+        }
+        Update: {
+          cart_fingerprint?: string
+          created_at?: string
+          destination_postal_code?: string
+          expires_at?: string
+          id?: string
+          options?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_quotes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -193,6 +571,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      order_status:
+        | "awaiting_payment"
+        | "payment_approved"
+        | "processing"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
       payment_status: "pending" | "paid" | "failed" | "expired" | "cancelled"
     }
     CompositeTypes: {
@@ -322,6 +707,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      order_status: [
+        "awaiting_payment",
+        "payment_approved",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
       payment_status: ["pending", "paid", "failed", "expired", "cancelled"],
     },
   },
