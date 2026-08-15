@@ -44,6 +44,13 @@ function normalizeAccessToken(value: string | undefined) {
   return token || null;
 }
 
+function getPersonalAccessToken() {
+  return normalizeAccessToken(
+    process.env["MELHOR_ENVIO_PERSONAL_TOKEN"] ??
+      process.env["MELHOR_ENVIO_ACCESS_TOKEN"],
+  );
+}
+
 function getBaseUrl() {
   return process.env["MELHOR_ENVIO_ENVIRONMENT"] === "production"
     ? "https://melhorenvio.com.br"
@@ -153,7 +160,7 @@ async function refreshToken(refreshToken: string): Promise<StoredProviderToken> 
 
 async function getAccessToken(forceRefresh = false) {
   if (getAuthMode() === "personal") {
-    const accessToken = normalizeAccessToken(process.env["MELHOR_ENVIO_ACCESS_TOKEN"]);
+    const accessToken = getPersonalAccessToken();
     if (!accessToken) {
       throw new Error("MELHOR_ENVIO_ACCESS_TOKEN não foi configurado no servidor.");
     }
