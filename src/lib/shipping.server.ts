@@ -29,6 +29,21 @@ export type ResolvedShippingCart = {
 
 const QUOTE_TIMEOUT_MS = 12_000;
 
+function getAuthMode() {
+  return process.env["MELHOR_ENVIO_AUTH_MODE"] === "personal" ? "personal" : "oauth";
+}
+
+function normalizeAccessToken(value: string | undefined) {
+  if (!value) return null;
+  let token = value.trim().replace(/^Bearer\\s+/i, "").trim();
+  const wrappedInMatchingQuotes =
+    token.length >= 2 &&
+    ((token.startsWith('"') && token.endsWith('"')) ||
+      (token.startsWith("'") && token.endsWith("'")));
+  if (wrappedInMatchingQuotes) token = token.slice(1, -1).trim();
+  return token || null;
+}
+
 function getBaseUrl() {
   return process.env["MELHOR_ENVIO_ENVIRONMENT"] === "production"
     ? "https://melhorenvio.com.br"
@@ -137,9 +152,17 @@ async function refreshToken(refreshToken: string): Promise<StoredProviderToken> 
 }
 
 async function getAccessToken(forceRefresh = false) {
+  if (getAuthMode() === "personal") {
+    const accessToken = normalizeAccessToken(process.env["MELHOR_ENVIO_ACCESS_TOKEN"]);
+    if (!accessToken) {
+      throw new Error("MELHOR_ENVIO_ACCESS_TOKEN não foi configurado no servidor.");
+    }
+    return accessToken;
+  }
+
   let token = await loadStoredToken();
   if (!token) {
-    const accessToken = process.env["MELHOR_ENVIO_ACCESS_TOKEN"];
+    const accessToken = normalizeAccessToken(process.env["MELHOR_ENVIO_ACCESS_TOKEN"]);
     if (!accessToken) throw new Error("MELHOR_ENVIO_ACCESS_TOKEN não foi configurado no servidor.");
     token = {
       access_token: accessToken,
@@ -306,8 +329,15 @@ async function requestQuote(
     clearTimeout(timeout);
   }
 
-  if (response.status === 401 && !forceRefresh) {
-    return requestQuote(cart, destinationPostalCode, true);
+  if (response.status === 401) {
+    if (getAuthMode() === "oauth" && !forceRefresh) {
+      return requestQuote(cart, destinationPostalCode, true);
+    }
+    throw new Error(
+      getAuthMode() === "personal"
+        ? "O token pessoal do Melhor Envio foi rejeitado. Gere um token no mesmo ambiente configurado e atualize o Secret."
+        : "O acesso OAuth do Melhor Envio foi rejeitado. Autorize novamente o aplicativo.",
+    );
   }
   if (!response.ok) {
     if (response.status === 422)
