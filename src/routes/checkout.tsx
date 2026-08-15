@@ -190,8 +190,8 @@ function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-night px-5 py-12 sm:px-8">
-      <div className="mx-auto w-full max-w-4xl">
+    <div className="min-h-screen bg-background px-5 py-8 sm:px-8 sm:py-12">
+      <div className="mx-auto w-full max-w-6xl">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
@@ -199,17 +199,38 @@ function CheckoutPage() {
           <ArrowLeft className="size-3.5" /> Voltar à loja
         </Link>
 
-        <h1 className="mt-8 font-display text-4xl sm:text-5xl">Finalizar pedido</h1>
+        <div className="mt-8 flex flex-col gap-6 border-b border-border/70 pb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[0.65rem] uppercase tracking-luxe text-primary">Checkout seguro</p>
+            <h1 className="mt-3 font-display text-4xl font-medium sm:text-6xl">Finalizar pedido</h1>
+          </div>
+          <ol
+            className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.14em] text-muted-foreground"
+            aria-label="Etapas da compra"
+          >
+            <li className="text-primary">1 Carrinho</li>
+            <li aria-hidden="true">—</li>
+            <li className="text-primary">2 Entrega</li>
+            <li aria-hidden="true">—</li>
+            <li>3 Pagamento</li>
+          </ol>
+        </div>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
           Pagamento via PIX. O valor é calculado e conferido pelo nosso servidor no momento da
           cobrança.
         </p>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
           <form
             onSubmit={submit}
-            className="space-y-6 rounded-2xl border border-border bg-card p-6 shadow-soft sm:p-8"
+            className="space-y-7 rounded-3xl bg-card p-6 shadow-luxe ring-1 ring-border/70 sm:p-9"
           >
+            <div>
+              <p className="font-display text-2xl font-medium">Dados para entrega</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Confirme quem receberá o pedido e onde será entregue.
+              </p>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="name" className="text-xs uppercase tracking-widest">
                 Nome completo
@@ -220,7 +241,7 @@ function CheckoutPage() {
                 onChange={(e) => setName(e.target.value)}
                 maxLength={80}
                 autoComplete="name"
-                className="rounded-xl"
+                className="rounded-xl bg-background/60"
                 required
               />
             </div>
@@ -235,11 +256,11 @@ function CheckoutPage() {
                 maxLength={500}
                 autoComplete="street-address"
                 placeholder="Rua, número, complemento, bairro, cidade e estado"
-                className="min-h-24 rounded-xl"
+                className="min-h-28 rounded-xl bg-background/60 px-4 py-3"
                 required
               />
             </div>
-            <div className="space-y-3 rounded-xl border border-border bg-background/40 p-4">
+            <div className="space-y-4 rounded-2xl bg-secondary/45 p-5 ring-1 ring-border/70 sm:p-6">
               <div>
                 <Label htmlFor="postal-code" className="text-xs uppercase tracking-widest">
                   CEP de entrega
@@ -256,13 +277,13 @@ function CheckoutPage() {
                   placeholder="00000-000"
                   inputMode="numeric"
                   autoComplete="postal-code"
-                  className="rounded-xl"
+                  className="rounded-xl bg-card"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   disabled={shippingLoading || lines.length === 0}
-                  className="shrink-0 rounded-xl"
+                  className="shrink-0 rounded-xl px-5"
                   onClick={() => void calculateFreight()}
                 >
                   {shippingLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
@@ -279,10 +300,10 @@ function CheckoutPage() {
                         key={option.service_id}
                         type="button"
                         onClick={() => setSelectedService(option.service_id)}
-                        className={`grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+                        className={`grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-4 text-left transition-all ${
                           selected
-                            ? "border-primary bg-primary/10"
-                            : "border-border bg-card hover:border-primary/50"
+                            ? "border-primary bg-primary/10 shadow-sm"
+                            : "border-border bg-card hover:border-primary/50 hover:shadow-sm"
                         }`}
                       >
                         <span
@@ -319,7 +340,7 @@ function CheckoutPage() {
                 maxLength={40}
                 inputMode="tel"
                 autoComplete="tel"
-                className="rounded-xl"
+                className="rounded-xl bg-background/60"
                 required
               />
             </div>
@@ -334,7 +355,7 @@ function CheckoutPage() {
                 lines.length === 0 ||
                 !selectedOption
               }
-              className="w-full rounded-full tracking-widest"
+              className="h-12 w-full rounded-full text-xs uppercase tracking-[0.16em]"
             >
               {loading ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
@@ -351,14 +372,17 @@ function CheckoutPage() {
             </p>
           </form>
 
-          <aside className="h-fit rounded-2xl border border-border bg-card p-6 shadow-soft">
-            <p className="text-xs uppercase tracking-luxe text-muted-foreground">Resumo</p>
+          <aside className="h-fit rounded-3xl bg-card p-6 shadow-luxe ring-1 ring-border/70 lg:sticky lg:top-8">
+            <p className="text-xs uppercase tracking-luxe text-primary">Resumo do pedido</p>
             <div className="mt-4 space-y-3">
               {lines.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Seu carrinho está vazio.</p>
               ) : (
                 lines.map(({ item, product }) => (
-                  <div key={item.id} className="flex items-start justify-between gap-3 text-sm">
+                  <div
+                    key={item.id}
+                    className="flex items-start justify-between gap-3 border-b border-border/60 pb-3 text-sm last:border-0"
+                  >
                     <span className="min-w-0">
                       <span className="block truncate">{product.name}</span>
                       <span className="text-xs text-muted-foreground">
@@ -383,7 +407,7 @@ function CheckoutPage() {
                 </span>
                 <span>{selectedOption ? formatBRL(selectedOption.price) : "A calcular"}</span>
               </div>
-              <div className="flex items-center justify-between border-t border-border pt-3">
+              <div className="flex items-center justify-between border-t border-border pt-4">
                 <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
                 <span className="font-display text-3xl text-primary">{formatBRL(finalTotal)}</span>
               </div>

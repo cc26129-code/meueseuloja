@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 
 import { FavoriteButton } from "@/components/products/FavoriteButton";
 import { ProductImage } from "@/components/products/ProductImage";
@@ -42,26 +43,31 @@ export function ProductCard({ product }: { product: ProductWithUrl }) {
   }
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-500 hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-gold">
-      <div className="relative aspect-4/3 overflow-hidden bg-secondary">
+    <article className="group relative flex flex-col overflow-hidden rounded-[1.5rem] bg-card shadow-[0_16px_45px_-34px_rgba(62,35,78,0.55)] ring-1 ring-border/70 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-luxe hover:ring-primary/30">
+      <Link
+        to="/produto/$id"
+        params={{ id: product.id }}
+        className="relative block aspect-4/5 overflow-hidden bg-secondary"
+        aria-label={`Ver detalhes de ${product.name}`}
+      >
         <ProductImage
           product={product}
           className="transition-transform duration-[900ms] ease-out group-hover:scale-105"
         />
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/70 to-transparent opacity-70" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-foreground/12 via-transparent to-transparent" />
         <StockBadge
           available={available}
           className="absolute left-4 top-4 text-[0.65rem] tracking-[0.18em]"
         />
         <FavoriteButton id={product.id} name={product.name} className="absolute right-4 top-4" />
-      </div>
+      </Link>
 
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <h3 className="font-display text-2xl leading-tight">{product.name}</h3>
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+      <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+        <h3 className="font-display text-[1.65rem] font-medium leading-tight">{product.name}</h3>
+        <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
           {product.description}
         </p>
-        <p className="mt-auto pt-4 text-lg tracking-wide text-primary">
+        <p className="mt-auto pt-3 text-lg font-medium tracking-wide text-primary">
           {formatBRL(Number(product.price))}
         </p>
 
@@ -78,7 +84,7 @@ export function ProductCard({ product }: { product: ProductWithUrl }) {
                 onIncrease={() => changeQty(qty + 1)}
               />
               <Button
-                className="flex-1 rounded-full tracking-widest"
+                className="flex-1 rounded-full text-xs uppercase tracking-[0.14em]"
                 onClick={addToCart}
                 disabled={remaining <= 0}
               >

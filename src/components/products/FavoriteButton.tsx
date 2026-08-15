@@ -26,7 +26,7 @@ export function FavoriteButton({
         toggle(id);
       }}
       className={cn(
-        "grid size-9 place-items-center rounded-full border border-border/70 bg-background/70 backdrop-blur transition-all duration-300 hover:border-primary/60 hover:bg-background/90",
+        "grid size-10 place-items-center rounded-full border border-white/60 bg-background/80 shadow-sm backdrop-blur transition-all duration-300 hover:scale-105 hover:border-primary/40 hover:bg-background",
         className,
       )}
     >

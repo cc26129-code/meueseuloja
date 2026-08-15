@@ -52,11 +52,11 @@ function Favoritos() {
           {isLoading ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {[0, 1, 2].map((i) => (
-                <Skeleton key={i} className="aspect-4/3 w-full rounded-2xl" />
+                <Skeleton key={i} className="aspect-4/5 w-full rounded-3xl" />
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-card px-8 py-24 text-center">
+            <div className="rounded-3xl bg-card px-8 py-24 text-center shadow-luxe ring-1 ring-border/70">
               <Heart className="mx-auto size-7 text-primary" />
               <p className="mt-6 font-display text-3xl">Ainda não há favoritos</p>
               <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">

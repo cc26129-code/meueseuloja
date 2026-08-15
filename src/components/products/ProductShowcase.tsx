@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -33,15 +34,12 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
   }
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-linear-to-b from-card to-secondary/40 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg">
-      <button
-        type="button"
-        onClick={() => {
-          const target = document.getElementById("produtos");
-          target?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }}
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-card shadow-[0_16px_45px_-34px_rgba(62,35,78,0.55)] ring-1 ring-border/70 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-luxe hover:ring-primary/30">
+      <Link
+        to="/produto/$id"
+        params={{ id: product.id }}
         aria-label={`Visualizar ${product.name}`}
-        className="relative block aspect-4/3 w-full overflow-hidden bg-secondary"
+        className="relative block aspect-4/5 w-full overflow-hidden bg-secondary"
       >
         <ProductImage
           product={product}
@@ -52,15 +50,17 @@ function ShowcaseCard({ product }: { product: ProductWithUrl }) {
           available={available}
           className="absolute left-3 top-3 text-[0.6rem] tracking-[0.16em]"
         />
-      </button>
+      </Link>
 
       <FavoriteButton id={product.id} name={product.name} className="absolute right-3 top-3 z-10" />
 
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <h3 className="font-display text-xl leading-tight">{product.name}</h3>
-        <p className="text-base tracking-wide text-primary">{formatBRL(Number(product.price))}</p>
+        <h3 className="font-display text-2xl font-medium leading-tight">{product.name}</h3>
+        <p className="text-base font-medium tracking-wide text-primary">
+          {formatBRL(Number(product.price))}
+        </p>
         <Button
-          className="mt-3 w-full rounded-full tracking-widest"
+          className="mt-3 w-full rounded-full text-xs uppercase tracking-[0.14em]"
           variant={available ? "default" : "outline"}
           disabled={!available || remaining <= 0}
           onClick={addToCart}
@@ -107,12 +107,18 @@ export function ProductShowcase() {
   return (
     <section
       aria-label="Vitrine de destaques"
-      className="border-b border-border bg-linear-to-b from-background to-secondary/20 pb-12 sm:pb-16 pt-12 sm:pt-16 mt-20 sm:mt-24"
+      className="border-b border-border/70 bg-linear-to-b from-secondary/35 to-background py-16 sm:py-24"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
+      <div className="mx-auto mb-10 max-w-2xl px-5 text-center sm:px-8">
+        <p className="text-[0.65rem] uppercase tracking-luxe text-primary">Em destaque</p>
+        <h2 className="mt-4 font-display text-4xl font-medium sm:text-5xl">
+          Descubra seus favoritos
+        </h2>
+      </div>
       <div className="relative mx-auto w-full max-w-7xl px-14 sm:px-16">
         <Button
           type="button"
@@ -144,7 +150,7 @@ export function ProductShowcase() {
                       key={i}
                       className="min-w-0 shrink-0 basis-[80%] sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                     >
-                      <Skeleton className="aspect-4/3 w-full rounded-3xl" />
+                      <Skeleton className="aspect-4/5 w-full rounded-3xl" />
                     </div>
                   ))
                 : products.map((p) => (

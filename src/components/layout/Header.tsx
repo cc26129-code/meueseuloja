@@ -27,6 +27,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/providers/auth-provider";
 import { useCart } from "@/providers/cart-provider";
+import { useFavorites } from "@/providers/favorites-provider";
 
 const links = [
   { label: "Início", href: "/#topo" },
@@ -49,6 +50,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { count, setOpen: setCartOpen } = useCart();
+  const { ids: favoriteIds } = useFavorites();
   const { user, profile, isAdmin, loading, signOut } = useAuth();
 
   useEffect(() => {
@@ -89,34 +91,34 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-border bg-background/95 backdrop-blur-xl transition-all duration-500 ${scrolled ? "py-3 shadow-soft" : "py-5"}`}
+      className={`fixed inset-x-0 top-0 z-50 border-b border-border/70 bg-background/88 backdrop-blur-2xl transition-all duration-500 ${scrolled ? "py-2.5 shadow-soft" : "py-4"}`}
     >
       <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 sm:px-8">
         <Link to="/" className="group min-w-0">
-          <span className="block truncate font-display text-2xl leading-none tracking-wide text-gold-gradient sm:text-3xl">
+          <span className="block truncate font-display text-2xl font-medium leading-none tracking-wide text-foreground sm:text-3xl">
             meueseuloja
           </span>
-          <span className="mt-1 block text-[0.6rem] uppercase tracking-luxe text-muted-foreground">
+          <span className="mt-1 block text-[0.56rem] uppercase tracking-[0.24em] text-primary">
             curadoria premium
           </span>
         </Link>
 
         <div className="flex items-center gap-1.5">
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav className="mr-2 hidden items-center gap-7 lg:flex">
             {links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-primary"
+                className="relative py-2 text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:text-foreground hover:after:scale-x-100"
               >
                 {link.label}
               </a>
             ))}
             <Link
               to="/favoritos"
-              className="text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-primary"
+              className="relative py-2 text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:text-foreground hover:after:scale-x-100"
             >
-              Favoritos
+              Favoritos{favoriteIds.length > 0 ? ` (${favoriteIds.length})` : ""}
             </Link>
           </nav>
 
@@ -124,7 +126,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="relative rounded-full"
+            className="relative rounded-full border border-transparent"
             aria-label={`Carrinho com ${count} itens`}
             onClick={() => setCartOpen(true)}
           >
@@ -133,7 +135,7 @@ export function Header() {
               Carrinho
             </span>
             {count > 0 && (
-              <span className="ml-1 grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[0.65rem] font-medium text-primary-foreground">
+              <span className="ml-1 grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[0.65rem] font-medium text-primary-foreground shadow-sm">
                 {count}
               </span>
             )}
@@ -200,7 +202,7 @@ export function Header() {
                 <Button asChild variant="ghost" size="sm" className="rounded-full">
                   <Link to="/entrar">Entrar</Link>
                 </Button>
-                <Button asChild size="sm" className="rounded-full">
+                <Button asChild size="sm" className="rounded-full px-5">
                   <Link to="/cadastro">Criar conta</Link>
                 </Button>
               </div>
